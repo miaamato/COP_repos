@@ -9,6 +9,7 @@ tags: []
 #C01 assignment
 
 ```{r}
+library(blogdown)
 library(dplyr)
 library(tidyverse)
 hotels <- read_csv("https://github.com/miaamato/tidyverse/blob/main/hotels.csv?raw=true")
