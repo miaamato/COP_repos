@@ -1,0 +1,58 @@
+---
+title: Exc4
+author: ''
+date: '2022-02-16'
+slug: exc4
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyr)
+customer_id = c(1,2, 3)
+items &lt;- data.frame(item_1 = c(&quot;milk&quot;, &quot;bread&quot;,&quot;cookies&quot;),
+item_2 = c(&quot;honey&quot;, &quot;cake&quot;, &quot;steak&quot;), 
+item_3 = c(&quot;bread&quot;, &quot;noodles&quot;, &quot;lettuce&quot;))
+purchases &lt;- data.frame(customer_id, items)
+purchases</code></pre>
+<pre><code>##   customer_id  item_1 item_2  item_3
+## 1           1    milk  honey   bread
+## 2           2   bread   cake noodles
+## 3           3 cookies  steak lettuce</code></pre>
+<p>#pivot_longer(data, cols, names_to, values_to)
+df, names of cols————–</p>
+<pre class="r"><code>long_purch &lt;- purchases %&gt;%
+  pivot_longer(
+    cols = item_1:item_3, 
+    names_to = &quot;item_no&quot;, #new column w combo data of the titles of item names
+    values_to = &quot;item&quot; #new column w combo data of item names
+  )
+purchases</code></pre>
+<pre><code>##   customer_id  item_1 item_2  item_3
+## 1           1    milk  honey   bread
+## 2           2   bread   cake noodles
+## 3           3 cookies  steak lettuce</code></pre>
+<pre class="r"><code>long_purch</code></pre>
+<pre><code>## # A tibble: 9 x 3
+##   customer_id item_no item   
+##         &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+## 1           1 item_1  milk   
+## 2           1 item_2  honey  
+## 3           1 item_3  bread  
+## 4           2 item_1  bread  
+## 5           2 item_2  cake   
+## 6           2 item_3  noodles
+## 7           3 item_1  cookies
+## 8           3 item_2  steak  
+## 9           3 item_3  lettuce</code></pre>

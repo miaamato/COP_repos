@@ -4,7 +4,7 @@ author: "Mia"
 date: "2/16/2022"
 output:
   html_document:
-    theme: cosmo
+    theme: yeti
     highlight: zenburn
     df_print: paged
     toc: yes
@@ -15,14 +15,13 @@ output:
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>``{r,warning=FALSE, message=FALSE, results=FALSE}
-library(datasets)
+<pre class="r"><code>library(datasets)
 library(tidyverse)
 data(iris)
 #load packages
-pkgs&lt;- c(“rstatix”, “emmeans”, “psych”, “tidyr”, “tidyverse”, “psych”, “dplyr”, “ggplot2”, “lm.beta”, “car”, “Hmisc”, “skimr”, “janitor”)
+pkgs&lt;- c(&quot;rstatix&quot;, &quot;emmeans&quot;, &quot;psych&quot;, &quot;tidyr&quot;, &quot;tidyverse&quot;, &quot;psych&quot;, &quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;lm.beta&quot;, &quot;car&quot;, &quot;Hmisc&quot;, &quot;skimr&quot;, &quot;janitor&quot;)
 lapply(pkgs, library, character.only = TRUE)
-setwd(“/Users/amoam/Desktop”)</p>
+setwd(&quot;/Users/amoam/Desktop&quot;)</code></pre>
 <div id="intro" class="section level1">
 <h1>Intro</h1>
 <pre class="r"><code>library(datasets)
@@ -73,14 +72,14 @@ sub items with tab indentation</li>
 </div>
 <div id="displaying-text" class="section level2">
 <h2>Displaying text</h2>
-<p>echo = TRUE is default- will show code
-echo = FALSE will not show code, only output
-warning = TRUE will show warnings if any
-warning = FALSE will not
-same with error
-results = TRUE shows output
-results = FALSE does not show output
-eval = TRUE/FALSE whether to evaluate code and include results - aka commenting out
+<p>echo = TRUE is default- will show code<br />
+echo = FALSE will not show code, only output<br />
+warning = TRUE will show warnings if any<br />
+warning = FALSE will not<br />
+same with error<br />
+results = TRUE shows output<br />
+results = FALSE does not show output<br />
+eval = TRUE/FALSE whether to evaluate code and include results - aka commenting out<br />
 ^^ appears in the ```r part of the chunks</p>
 </div>
 </div>
@@ -91,7 +90,7 @@ author: &quot;Mia&quot;
 date: &quot;2/16/2022&quot;
 output: 
   html_document
-    theme: cosmo
+    theme: yeti
     highlight: zenburn
     df_print: paged
     toc: true

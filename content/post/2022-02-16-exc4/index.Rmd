@@ -1,0 +1,31 @@
+---
+title: Exc4
+author: ''
+date: '2022-02-16'
+slug: exc4
+categories: []
+tags: []
+---
+```{r}
+library(dplyr)
+library(tidyr)
+customer_id = c(1,2, 3)
+items <- data.frame(item_1 = c("milk", "bread","cookies"),
+item_2 = c("honey", "cake", "steak"), 
+item_3 = c("bread", "noodles", "lettuce"))
+purchases <- data.frame(customer_id, items)
+purchases
+```
+#pivot_longer(data, cols, names_to, values_to)
+              df, names of cols--------------
+```{r}
+long_purch <- purchases %>%
+  pivot_longer(
+    cols = item_1:item_3, 
+    names_to = "item_no", #new column w combo data of the titles of item names
+    values_to = "item" #new column w combo data of item names
+  )
+purchases
+long_purch
+```
+

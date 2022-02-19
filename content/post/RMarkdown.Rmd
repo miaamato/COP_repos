@@ -1,0 +1,100 @@
+---
+title: "RMarkdown"
+author: "Mia"
+date: "2/16/2022"
+output:
+  html_document:
+    theme: yeti
+    highlight: zenburn
+    df_print: paged
+    toc: yes
+    toc_float: yes
+  theme: default
+---
+
+```{r eval= FALSE}
+library(datasets)
+library(tidyverse)
+data(iris)
+#load packages
+pkgs<- c("rstatix", "emmeans", "psych", "tidyr", "tidyverse", "psych", "dplyr", "ggplot2", "lm.beta", "car", "Hmisc", "skimr", "janitor")
+lapply(pkgs, library, character.only = TRUE)
+setwd("/Users/amoam/Desktop")
+```
+
+# Intro
+```{r}
+library(datasets)
+library(tidyverse)
+data(iris)
+2+2
+mean(iris$Sepal.Length)
+```
+# Basics
+## Inline code
+Two plus two `r 2+2`
+
+## Text
+two spaces after a line..  
+*italics* and _italics_  
+**bold** and _bold_  
+superscript^2^  
+~~strikethrough~~  
+[link](github.com)  
+
+## Headers (level2)
+## Symbols
+inline equation $A = \pi*r^{2}$  
+
+***
+> block quote  
+
+* bullet points 
+  sub items with tab indentation  
+  
+## Displaying text
+echo = TRUE is default- will show code  
+echo = FALSE will not show code, only output  
+warning = TRUE will show warnings if any  
+warning = FALSE will not  
+same with error  
+results = TRUE shows output  
+results = FALSE does not show output  
+eval = TRUE/FALSE whether to evaluate code and include results - aka commenting out  
+^^ appears in the ```r part of the chunks  
+
+# Floating TOC
+```{r, eval = FALSE}
+title: "RMarkdown"
+author: "Mia"
+date: "2/16/2022"
+output: 
+  html_document
+    theme: yeti
+    highlight: zenburn
+    df_print: paged
+    toc: true
+    toc_float: true
+    smooth_scroll: true
+```
+
+# Advanced Inline Code
+```{r}
+# run anova
+model <- aov(Sepal.Length~Species, data = iris)
+summary(model)
+
+# clean tibble from output w broom package
+library(broom)
+modelmatrix <- broom::tidy(model)
+
+# round to 3 decimals for clean output
+modelmatrix$p.value <- sprintf(modelmatrix$p.value, fmt = "%#.3f")
+modelmatrix
+```
+
+>There is a significant main effect on Species on Sepal Length, *F* `r modelmatrix$df[1]`, `r modelmatrix$df[2]` = `r modelmatrix$statistic[1]`, *p* = `r modelmatrix$p.value[1]`
+```{r}
+
+```
+

@@ -1,0 +1,28 @@
+```{r}
+library(dplyr)
+url <- 'https://raw.githubusercontent.com/miaamato/tidyverse/main/hotels.csv'
+hotels <- read.csv(url)
+names(hotels)
+```
+```{r}
+glimpse(hotels)
+```
+
+select(hotels, lead_time)
+```{r}
+select(
+  hotels,
+  lead_time
+)
+```
+
+```{r}
+hotels %>%
+  select(hotels, hotel, lead_time) %>%
+  arrange(desc(lead_time))
+```
+
+
+
+
+
