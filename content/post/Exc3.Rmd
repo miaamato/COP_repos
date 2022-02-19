@@ -1,9 +1,4 @@
 ```{r}
-```
-
-
-
-```{r}
 professions_df <- data.frame(names = c("Ada Lovelace",
 "Marie Curie",
 "Janaki Ammal",
@@ -26,7 +21,7 @@ dates_df <- data.frame(names = c("Ada Lovelace",
 "Gladys West",
 "Flossie Wong-Staal",
 "Jennifer Doudna"), 
-birth_year =c(NA, NA, 1897,1912,1918,1920,1928,1930,1947,1964),
+birth_year = c(NA, NA, 1897,1912,1918,1920,1928,1930,1947,1964),
 death_year = c(NA, NA, 1984, 1997, 2020, 1958, 2016, NA, NA, NA))
 
 works_df <- data.frame(names = c("Ada Lovelace",
@@ -39,12 +34,10 @@ works_df <- data.frame(names = c("Ada Lovelace",
 "Gladys West",
 "Flossie Wong-Staal",
 "Jennifer Doudna"), 
-known_for =c("first computer algorithm", "theory of radioactivity etc", "hybrid species, biodiversity protection","confirm and refine theory of radioactivity beta etc", "calculations of orbial mechanics critical to..", "existance of dark matter", NA,"mathematical mmodeling of the shape of the Earth", "first scientist to clone HIV and create a map..", "one of the primary developers of CRISPR"))
+known_for = c("first computer algorithm", "theory of radioactivity etc", "hybrid species, biodiversity protection","confirm and refine theory of radioactivity beta etc", "calculations of orbial mechanics critical to..", "existance of dark matter", NA,"mathematical mmodeling of the shape of the Earth", "first scientist to clone HIV and create a map..", "one of the primary developers of CRISPR"))
 ```
 # data frames have been made- now combine
 ```{r}
-works_df
-professions_df
 professions_df %>%
   left_join(dates_df) %>%
   left_join(works_df)
