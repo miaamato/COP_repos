@@ -1,0 +1,96 @@
+---
+title: DataTypes
+author: mia
+date: '2022-02-21'
+slug: datatypes
+categories: []
+tags: []
+---
+
+# inputing data from forked github
+```{r}
+cat_lovers <- read.csv("https://raw.githubusercontent.com/miaamato/tidyverse/main/cat-lovers.csv")
+cat_lovers
+```
+# renaming the column i..name
+```{r}
+library(tidyverse)
+names(cat_lovers)[names(cat_lovers) == "ï..name"] <- "name"
+cat_lovers
+```
+
+
+# need to open dplyr to use %>%
+```{r}
+library(dplyr)
+cat_lovers %>%
+  summarize(mean_cats = mean(number_of_cats))
+
+```
+```{r}
+cat_lovers %>%
+  summarize(mean_cats = mean(number_of_cats, na.rm = TRUE))
+```
+
+# fixing dataset
+```{r}
+cat_lovers %>%
+  mutate(number_of_cats = case_when(
+    name == "Ginger Clark" ~ 2,
+    name == "Doug Bass"    ~ 3,
+    TRUE                   ~ as.numeric(number_of_cats)
+    )) %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
+```{r}
+cat_lovers <- cat_lovers %>%
+  mutate(
+    number_of_cats = case_when(
+      name == "Ginger Clark" ~ "2",
+      name == "Doug Bass"    ~ "3",
+      TRUE                   ~ number_of_cats
+      ),
+    number_of_cats = as.numeric(number_of_cats)
+    )
+```
+
+
+# logical, double, integer,character
+# integers are indicated w an L
+# integer -> logical -> double
+# double -> character
+```{r}
+typeof(TRUE)
+typeof("hello")
+typeof(55)
+typeof(1:3)
+typeof(4L)
+```
+# Vectors
+```{r}
+c(1,2,3,3)
+hellos <- c("Hello", "World!")
+hellos
+greet <- c(c("hi", "hey"), c("jello", "hello"))
+greet
+```
+#explicit coercion
+Number vs Character
+```{r}
+x <- c(1:3)
+typeof(x)
+typeof(as.character(x))
+```
+Number vs Logical
+```{r}
+x <-c("TRUE", "FALSE")
+typeof(as.numeric(x))
+```
+# implicit coercion
+
+```{r}
+typeof(c(1, FALSE))
+typeof(c("hello", 1))
+
+```
+
