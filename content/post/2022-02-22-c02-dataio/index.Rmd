@@ -163,14 +163,34 @@ sales_ex <- sales_ex %>%
     brand = case_when(col1 == "Brand 1" ~ "Brand 1",
                       col1 =="Brand 2" ~ "Brand 2",
                       col2 == c("8", "2") ~ "Brand 1",
-                      col2 == c("1") ~ "Brand 2")
+                      col2 == c("1", "6", "5") ~ "Brand 2") 
     )
 sales_ex
 ```
 
 ```{r}
-sales_ex[5,3] <- "Brand 1"
+sales_ex[7,3] <- "Brand 1"
+sales_ex[10,3] <- "Brand 2"
+sales_ex[9,3] <-"Brand 2"
 sales_ex
+
+```
+
+
+```{r}
+sales_ex %>%
+  filter(col1 != "Brand 1" & col1 != "Brand 2")
+```
+```{r}
+sales_ex %>%
+  mutate(
+    brand = case_when(col1 == "Brand 1" ~ "Brand 1",
+                      col1 =="Brand 2" ~ "Brand 2",
+                      col2 == c("8", "2") ~ "Brand 1",
+                      col2 == c("1") ~ "Brand 2"),
+    id = case_when(col1 != "Brand 1" ~ col1,
+                   col1 != "Brand 2" ~ col1)
+    )
 ```
 
 mutate(

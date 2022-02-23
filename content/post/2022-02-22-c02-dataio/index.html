@@ -364,7 +364,7 @@ sales_ex &lt;- sales_ex %&gt;%
     brand = case_when(col1 == &quot;Brand 1&quot; ~ &quot;Brand 1&quot;,
                       col1 ==&quot;Brand 2&quot; ~ &quot;Brand 2&quot;,
                       col2 == c(&quot;8&quot;, &quot;2&quot;) ~ &quot;Brand 1&quot;,
-                      col2 == c(&quot;1&quot;) ~ &quot;Brand 2&quot;)
+                      col2 == c(&quot;1&quot;, &quot;6&quot;, &quot;5&quot;) ~ &quot;Brand 2&quot;) 
     )
 sales_ex</code></pre>
 <pre><code>## # A tibble: 12 x 3
@@ -378,11 +378,13 @@ sales_ex</code></pre>
 ##  6 8721                                                              2     Bran~
 ##  7 1822                                                              3     &lt;NA&gt; 
 ##  8 Brand 2                                                           n     Bran~
-##  9 3333                                                              1     Bran~
+##  9 3333                                                              1     &lt;NA&gt; 
 ## 10 2156                                                              3     &lt;NA&gt; 
-## 11 3987                                                              6     &lt;NA&gt; 
-## 12 3216                                                              5     &lt;NA&gt;</code></pre>
-<pre class="r"><code>sales_ex[5,3] &lt;- &quot;Brand 1&quot;
+## 11 3987                                                              6     Bran~
+## 12 3216                                                              5     Bran~</code></pre>
+<pre class="r"><code>sales_ex[7,3] &lt;- &quot;Brand 1&quot;
+sales_ex[10,3] &lt;- &quot;Brand 2&quot;
+sales_ex[9,3] &lt;-&quot;Brand 2&quot;
 sales_ex</code></pre>
 <pre><code>## # A tibble: 12 x 3
 ##    col1                                                              col2  brand
@@ -393,12 +395,49 @@ sales_ex</code></pre>
 ##  4 Brand 1                                                           n     Bran~
 ##  5 1234                                                              8     Bran~
 ##  6 8721                                                              2     Bran~
-##  7 1822                                                              3     &lt;NA&gt; 
+##  7 1822                                                              3     Bran~
 ##  8 Brand 2                                                           n     Bran~
 ##  9 3333                                                              1     Bran~
-## 10 2156                                                              3     &lt;NA&gt; 
-## 11 3987                                                              6     &lt;NA&gt; 
-## 12 3216                                                              5     &lt;NA&gt;</code></pre>
+## 10 2156                                                              3     Bran~
+## 11 3987                                                              6     Bran~
+## 12 3216                                                              5     Bran~</code></pre>
+<pre class="r"><code>sales_ex %&gt;%
+  filter(col1 != &quot;Brand 1&quot; &amp; col1 != &quot;Brand 2&quot;)</code></pre>
+<pre><code>## # A tibble: 8 x 3
+##   col1                                                               col2  brand
+##   &lt;chr&gt;                                                              &lt;chr&gt; &lt;chr&gt;
+## 1 Data are organized by brand name, and for each brand we have the ~ &lt;NA&gt;  &lt;NA&gt; 
+## 2 1234                                                               8     Bran~
+## 3 8721                                                               2     Bran~
+## 4 1822                                                               3     Bran~
+## 5 3333                                                               1     Bran~
+## 6 2156                                                               3     Bran~
+## 7 3987                                                               6     Bran~
+## 8 3216                                                               5     Bran~</code></pre>
+<pre class="r"><code>sales_ex %&gt;%
+  mutate(
+    brand = case_when(col1 == &quot;Brand 1&quot; ~ &quot;Brand 1&quot;,
+                      col1 ==&quot;Brand 2&quot; ~ &quot;Brand 2&quot;,
+                      col2 == c(&quot;8&quot;, &quot;2&quot;) ~ &quot;Brand 1&quot;,
+                      col2 == c(&quot;1&quot;) ~ &quot;Brand 2&quot;),
+    id = case_when(col1 != &quot;Brand 1&quot; ~ col1,
+                   col1 != &quot;Brand 2&quot; ~ col1)
+    )</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##    col1                                                        col2  brand id   
+##    &lt;chr&gt;                                                       &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+##  1 Data are organized by brand name, and for each brand we ha~ &lt;NA&gt;  &lt;NA&gt;  Data~
+##  2 &lt;NA&gt;                                                        &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 
+##  3 &lt;NA&gt;                                                        &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 
+##  4 Brand 1                                                     n     Bran~ Bran~
+##  5 1234                                                        8     Bran~ 1234 
+##  6 8721                                                        2     Bran~ 8721 
+##  7 1822                                                        3     &lt;NA&gt;  1822 
+##  8 Brand 2                                                     n     Bran~ Bran~
+##  9 3333                                                        1     Bran~ 3333 
+## 10 2156                                                        3     &lt;NA&gt;  2156 
+## 11 3987                                                        6     &lt;NA&gt;  3987 
+## 12 3216                                                        5     &lt;NA&gt;  3216</code></pre>
 <p>mutate(
 brand = if_else( == “five”, “5”, age),</p>
 </div>
