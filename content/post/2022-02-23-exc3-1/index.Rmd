@@ -1,0 +1,68 @@
+---
+title: Exc3-1
+author: ''
+date: '2022-02-23'
+slug: exc3-1
+categories: []
+tags: []
+---
+# Made dataframe by hand
+```{r}
+library(tidyverse)
+professions_df <- data.frame(names = c("Ada Lovelace",
+"Marie Curie",
+"Janaki Ammal",
+"Chien-Shiung Wu",
+"Katherine Johnson",
+"Rosalind Franklin",
+"Vera Rubin",
+"Gladys West",
+"Flossie Wong-Staal",
+"Jennifer Doudna"),
+professions =c("Mathematician", "Phycisit and Chemist", "Botanist", "Physicist", "Mathemetician","Chemist", "Astronomer", "Mathematician", "Virologist and Mol Biologist", "Biochemist"))
+
+dates_df <- data.frame(names = c("Ada Lovelace",
+"Marie Curie",
+"Janaki Ammal",
+"Chien-Shiung Wu",
+"Katherine Johnson",
+"Rosalind Franklin",
+"Vera Rubin",
+"Gladys West",
+"Flossie Wong-Staal",
+"Jennifer Doudna"), 
+birth_year = c(NA, NA, 1897,1912,1918,1920,1928,1930,1947,1964),
+death_year = c(NA, NA, 1984, 1997, 2020, 1958, 2016, NA, NA, NA))
+
+works_df <- data.frame(names = c("Ada Lovelace",
+"Marie Curie",
+"Janaki Ammal",
+"Chien-Shiung Wu",
+"Katherine Johnson",
+"Rosalind Franklin",
+"Vera Rubin",
+"Gladys West",
+"Flossie Wong-Staal",
+"Jennifer Doudna"), 
+known_for = c("first computer algorithm", "theory of radioactivity etc", "hybrid species, biodiversity protection","confirm and refine theory of radioactivity beta etc", "calculations of orbial mechanics critical to..", "existance of dark matter", NA,"mathematical mmodeling of the shape of the Earth", "first scientist to clone HIV and create a map..", "one of the primary developers of CRISPR"))
+```
+# data frames have been made- now combine
+```{r}
+professions_df %>%
+  left_join(dates_df) %>%
+  left_join(works_df)
+
+```
+# grocery thing now
+```{r}
+customer_id = c(1,2, 1, 1,2)
+items = c("milk", "bread", "honey", "cake", "cookies")
+purchases <- data.frame(customer_id, items)
+prices <- data.frame(items, price = c(3.30, 2.20, 2.35, 7.76, 4.12))
+purchases %>%
+  left_join(prices) %>%
+  group_by(customer_id) %>%
+  summarise(total_rev = sum(price))
+```
+
+

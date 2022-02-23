@@ -1,0 +1,107 @@
+---
+title: Exc3-1
+author: ''
+date: '2022-02-23'
+slug: exc3-1
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="made-dataframe-by-hand" class="section level1">
+<h1>Made dataframe by hand</h1>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.6     v dplyr   1.0.7
+## v tidyr   1.2.0     v stringr 1.4.0
+## v readr   2.1.2     v forcats 0.5.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>professions_df &lt;- data.frame(names = c(&quot;Ada Lovelace&quot;,
+&quot;Marie Curie&quot;,
+&quot;Janaki Ammal&quot;,
+&quot;Chien-Shiung Wu&quot;,
+&quot;Katherine Johnson&quot;,
+&quot;Rosalind Franklin&quot;,
+&quot;Vera Rubin&quot;,
+&quot;Gladys West&quot;,
+&quot;Flossie Wong-Staal&quot;,
+&quot;Jennifer Doudna&quot;),
+professions =c(&quot;Mathematician&quot;, &quot;Phycisit and Chemist&quot;, &quot;Botanist&quot;, &quot;Physicist&quot;, &quot;Mathemetician&quot;,&quot;Chemist&quot;, &quot;Astronomer&quot;, &quot;Mathematician&quot;, &quot;Virologist and Mol Biologist&quot;, &quot;Biochemist&quot;))
+
+dates_df &lt;- data.frame(names = c(&quot;Ada Lovelace&quot;,
+&quot;Marie Curie&quot;,
+&quot;Janaki Ammal&quot;,
+&quot;Chien-Shiung Wu&quot;,
+&quot;Katherine Johnson&quot;,
+&quot;Rosalind Franklin&quot;,
+&quot;Vera Rubin&quot;,
+&quot;Gladys West&quot;,
+&quot;Flossie Wong-Staal&quot;,
+&quot;Jennifer Doudna&quot;), 
+birth_year = c(NA, NA, 1897,1912,1918,1920,1928,1930,1947,1964),
+death_year = c(NA, NA, 1984, 1997, 2020, 1958, 2016, NA, NA, NA))
+
+works_df &lt;- data.frame(names = c(&quot;Ada Lovelace&quot;,
+&quot;Marie Curie&quot;,
+&quot;Janaki Ammal&quot;,
+&quot;Chien-Shiung Wu&quot;,
+&quot;Katherine Johnson&quot;,
+&quot;Rosalind Franklin&quot;,
+&quot;Vera Rubin&quot;,
+&quot;Gladys West&quot;,
+&quot;Flossie Wong-Staal&quot;,
+&quot;Jennifer Doudna&quot;), 
+known_for = c(&quot;first computer algorithm&quot;, &quot;theory of radioactivity etc&quot;, &quot;hybrid species, biodiversity protection&quot;,&quot;confirm and refine theory of radioactivity beta etc&quot;, &quot;calculations of orbial mechanics critical to..&quot;, &quot;existance of dark matter&quot;, NA,&quot;mathematical mmodeling of the shape of the Earth&quot;, &quot;first scientist to clone HIV and create a map..&quot;, &quot;one of the primary developers of CRISPR&quot;))</code></pre>
+</div>
+<div id="data-frames-have-been-made--now-combine" class="section level1">
+<h1>data frames have been made- now combine</h1>
+<pre class="r"><code>professions_df %&gt;%
+  left_join(dates_df) %&gt;%
+  left_join(works_df)</code></pre>
+<pre><code>## Joining, by = &quot;names&quot;
+## Joining, by = &quot;names&quot;</code></pre>
+<pre><code>##                 names                  professions birth_year death_year
+## 1        Ada Lovelace                Mathematician         NA         NA
+## 2         Marie Curie         Phycisit and Chemist         NA         NA
+## 3        Janaki Ammal                     Botanist       1897       1984
+## 4     Chien-Shiung Wu                    Physicist       1912       1997
+## 5   Katherine Johnson                Mathemetician       1918       2020
+## 6   Rosalind Franklin                      Chemist       1920       1958
+## 7          Vera Rubin                   Astronomer       1928       2016
+## 8         Gladys West                Mathematician       1930         NA
+## 9  Flossie Wong-Staal Virologist and Mol Biologist       1947         NA
+## 10    Jennifer Doudna                   Biochemist       1964         NA
+##                                              known_for
+## 1                             first computer algorithm
+## 2                          theory of radioactivity etc
+## 3              hybrid species, biodiversity protection
+## 4  confirm and refine theory of radioactivity beta etc
+## 5       calculations of orbial mechanics critical to..
+## 6                             existance of dark matter
+## 7                                                 &lt;NA&gt;
+## 8     mathematical mmodeling of the shape of the Earth
+## 9      first scientist to clone HIV and create a map..
+## 10             one of the primary developers of CRISPR</code></pre>
+</div>
+<div id="grocery-thing-now" class="section level1">
+<h1>grocery thing now</h1>
+<pre class="r"><code>customer_id = c(1,2, 1, 1,2)
+items = c(&quot;milk&quot;, &quot;bread&quot;, &quot;honey&quot;, &quot;cake&quot;, &quot;cookies&quot;)
+purchases &lt;- data.frame(customer_id, items)
+prices &lt;- data.frame(items, price = c(3.30, 2.20, 2.35, 7.76, 4.12))
+purchases %&gt;%
+  left_join(prices) %&gt;%
+  group_by(customer_id) %&gt;%
+  summarise(total_rev = sum(price))</code></pre>
+<pre><code>## Joining, by = &quot;items&quot;</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   customer_id total_rev
+##         &lt;dbl&gt;     &lt;dbl&gt;
+## 1           1     13.4 
+## 2           2      6.32</code></pre>
+</div>
