@@ -1,0 +1,177 @@
+---
+title: C02_DataIO
+author: mia
+date: '2022-02-22'
+slug: c02-dataio
+categories: []
+tags: []
+---
+
+# import stuff
+```{r}
+library(tidyverse)
+nobel <- read_csv(file = "https://raw.githubusercontent.com/miaamato/tidyverse/main/nobel.csv")
+nobel
+```
+# writing a file
+> did not let me write in the file from the github repos, said it was read only  
+
+```{r}
+df <- tribble(
+  ~x, ~y,
+  1, "a", 
+  2, "b", 
+  3, "c"
+)
+read.csv(file = "https://raw.githubusercontent.com/miaamato/tidyverse/main/df.csv")
+```
+# exc1
+```{r}
+sales <- read.csv(file = "https://raw.githubusercontent.com/miaamato/tidyverse/main/sales.csv")
+sales
+nobel
+```
+
+## stem
+```{r}
+nobel_stem <- nobel %>%
+  filter(category %in% c("Medicine", "Chemistry", "Economics", "Physics"))
+nobel_stem
+```
+## nonstem
+```{r}
+nobel["category"]
+nobel_nonstem <- nobel %>%
+  filter(category %in% c("Peace", "Literature"))
+nobel_nonstem
+```
+
+# badnames Data
+```{r}
+edibnb_badnames <- read.csv("https://raw.githubusercontent.com/miaamato/tidyverse/main/edibnb-badnames.csv")
+names(edibnb_badnames)
+```
+```{r}
+library(ggplot2)
+ggplot(edibnb_badnames, aes(Number.of.bathrooms, Price)) +
+  geom_point()
+# data had periods where the exercise says the names have spaces?
+```
+## redefine columns
+```{r}
+edibnb_col_names <- read.csv("https://raw.githubusercontent.com/miaamato/tidyverse/main/edibnb-badnames.csv", 
+                             col.names = c("id", "price", "neighborhood", "accomodates", "bathroom", "bedroom", "bed", "review_scores_rating", "n_reviews", "url"))
+names(edibnb_col_names)
+```
+```{r}
+edibnb_clean_names <- read.csv('https://raw.githubusercontent.com/miaamato/tidyverse/main/edibnb-badnames.csv') %>%
+  janitor::clean_names()
+# replaces any spaces with underscores, needs janitor package
+names(edibnb_clean_names)
+```
+## types of columns 
+> col character()  
+> col_date()  
+> col_datetime()  
+> col_double()  
+> col_factor()  
+> col_guess()- default  
+> col_integer()  
+> col_logical()  
+> col_number()- numbers and nonnumbers  
+> col_numeric()- double/integer  
+> col_skip()- don't read  
+> col_time()  
+
+
+```{r}
+read.csv("https://raw.githubusercontent.com/miaamato/tidyverse/main/df-na.csv")
+
+# for some reason does not identify y or z as a variable, tried typeof() and did not work 
+# could identify x as character but created error when knitting
+```
+
+# Reading from Excel
+```{r}
+# install package of readxl
+library(readxl)
+fav_food <- read_excel(file.choose())
+fav_food
+```
+## variable name change
+```{r}
+library(tidyverse)
+fav_food <- read_excel(file.choose()) %>%
+  janitor::clean_names()
+
+fav_food
+```
+
+## dealing with N/A
+```{r}
+fav_food <- read_excel(file.choose(),
+                       na = c("N/A", "99999")) %>%
+  janitor::clean_names()
+fav_food
+```
+## making age numeric
+
+```{r}
+av_food <- fav_food %>%
+  mutate(
+    age = if_else(age == "five", "5", age),
+    age = as.numeric(age)
+    )
+glimpse(fav_food)
+```
+```{r}
+fav_food <- fav_food %>%
+  mutate(ses = fct_relevel(ses, "Low", "Middle", "High"))
+# organizes by the labels
+
+fav_food %>%
+  count(ses)
+```
+## putting all together
+
+```{r}
+fav_food <- read_excel(file.choose(), na = c("N/A", "99999")) %>%
+  janitor::clean_names() %>%
+  mutate(
+    age = if_else(age == "five", "5", age), 
+    age = as.numeric(age),
+    ses = fct_relevel(ses, "Low", "Middle", "High")
+  )
+
+
+fav_food
+```
+# RDS files
+> Like CSVs but not  
+> Allows for reading with read_rds() and writing with r write_rds()  
+
+# Sales data exercise
+```{r}
+sales_ex <- read_excel(file.choose()) 
+sales_ex
+```
+
+```{r}
+colnames(sales_ex) <- c("col1", "col2")
+sales_ex <- sales_ex %>%
+  mutate(
+    brand = case_when(col1 == "Brand 1" ~ "Brand 1",
+                      col1 =="Brand 2" ~ "Brand 2",
+                      col2 == c("8", "2") ~ "Brand 1",
+                      col2 == c("1") ~ "Brand 2")
+    )
+sales_ex
+```
+
+```{r}
+sales_ex[5,3] <- "Brand 1"
+sales_ex
+```
+
+mutate(
+    brand = if_else( == "five", "5", age),

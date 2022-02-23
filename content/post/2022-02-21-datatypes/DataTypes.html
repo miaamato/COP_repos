@@ -1,0 +1,365 @@
+---
+title: DataTypes
+author: mia
+date: '2022-02-21'
+slug: datatypes
+categories: []
+tags: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="inputing-data-from-forked-github" class="section level1">
+<h1>inputing data from forked github</h1>
+<pre class="r"><code>cat_lovers &lt;- read.csv(&quot;https://raw.githubusercontent.com/miaamato/tidyverse/main/cat-lovers.csv&quot;)
+cat_lovers</code></pre>
+<pre><code>##                ï..name                                      number_of_cats
+## 1       Bernice Warren                                                   0
+## 2        Woodrow Stone                                                   0
+## 3          Willie Bass                                                   1
+## 4       Tyrone Estrada                                                   3
+## 5         Alex Daniels                                                   3
+## 6           Jane Bates                                                   2
+## 7       Latoya Simpson                                                   1
+## 8          Darin Woods                                                   1
+## 9           Agnes Cobb                                                   0
+## 10       Tabitha Grant                                                   0
+## 11         Perry Cross                                                   0
+## 12         Wanda Silva                                                   0
+## 13         Alicia Sims                                                   1
+## 14         Emily Logan                                                   3
+## 15     Woodrow Elliott                                                   3
+## 16      Brent Copeland                                                   2
+## 17       Pedro Carlson                                                   1
+## 18          Patsy Luna                                                   1
+## 19       Brett Robbins                                                   0
+## 20       Oliver George                                                   0
+## 21        Calvin Perry                                                   1
+## 22      Lora Gutierrez                                                   1
+## 23    Charlotte Sparks                                                   0
+## 24           Earl Mack                                                   0
+## 25         Leslie Wade                                                   4
+## 26     Santiago Barker                                                   0
+## 27           Jose Bell                                                   0
+## 28         Lynda Smith                                                   0
+## 29   Bradford Marshall                                                   0
+## 30       Irving Miller                                                   0
+## 31    Caroline Simpson                                                   0
+## 32       Frances Welch                                                   0
+## 33       Melba Jenkins                                                   0
+## 34    Veronica Morales                                                   0
+## 35  Juanita Cunningham                                                   0
+## 36      Maurice Howard                                                   0
+## 37         Teri Pierce                                                   0
+## 38       Phil Franklin                                                   0
+## 39       Jan Zimmerman                                                   0
+## 40        Leslie Price                                                   0
+## 41    Bessie Patterson                                                   0
+## 42         Ethel Wolfe                                                   0
+## 43        Naomi Wright                                                   1
+## 44         Sadie Frank                                                   3
+## 45       Lonnie Cannon                                                   3
+## 46         Tony Garcia                                                   2
+## 47        Darla Newton                                                   1
+## 48        Ginger Clark 1.5 - honestly I think one of my cats is half human
+## 49     Lionel Campbell                                                   0
+## 50      Florence Klein                                                   0
+## 51     Harriet Leonard                                                   1
+## 52 Terrence Harrington                                                   0
+## 53       Travis Garner                                                   1
+## 54           Doug Bass                                               three
+## 55          Pat Norris                                                   1
+## 56          Dawn Young                                                   1
+## 57       Shari Alvarez                                                   1
+## 58     Tamara Robinson                                                   0
+## 59        Megan Morgan                                                   0
+## 60         Kara Obrien                                                   2
+##      handedness
+## 1          left
+## 2          left
+## 3          left
+## 4          left
+## 5          left
+## 6          left
+## 7          left
+## 8          left
+## 9          left
+## 10         left
+## 11         left
+## 12         left
+## 13         left
+## 14        right
+## 15        right
+## 16        right
+## 17        right
+## 18        right
+## 19        right
+## 20        right
+## 21        right
+## 22        right
+## 23        right
+## 24        right
+## 25        right
+## 26        right
+## 27        right
+## 28        right
+## 29        right
+## 30        right
+## 31        right
+## 32        right
+## 33        right
+## 34        right
+## 35        right
+## 36        right
+## 37        right
+## 38        right
+## 39        right
+## 40        right
+## 41        right
+## 42        right
+## 43        right
+## 44        right
+## 45        right
+## 46        right
+## 47        right
+## 48        right
+## 49        right
+## 50        right
+## 51        right
+## 52        right
+## 53        right
+## 54        right
+## 55        right
+## 56 ambidextrous
+## 57 ambidextrous
+## 58 ambidextrous
+## 59 ambidextrous
+## 60 ambidextrous</code></pre>
+</div>
+<div id="renaming-the-column-i..name" class="section level1">
+<h1>renaming the column i..name</h1>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.6     v dplyr   1.0.7
+## v tidyr   1.2.0     v stringr 1.4.0
+## v readr   2.1.2     v forcats 0.5.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>names(cat_lovers)[names(cat_lovers) == &quot;ï..name&quot;] &lt;- &quot;name&quot;
+cat_lovers</code></pre>
+<pre><code>##                   name                                      number_of_cats
+## 1       Bernice Warren                                                   0
+## 2        Woodrow Stone                                                   0
+## 3          Willie Bass                                                   1
+## 4       Tyrone Estrada                                                   3
+## 5         Alex Daniels                                                   3
+## 6           Jane Bates                                                   2
+## 7       Latoya Simpson                                                   1
+## 8          Darin Woods                                                   1
+## 9           Agnes Cobb                                                   0
+## 10       Tabitha Grant                                                   0
+## 11         Perry Cross                                                   0
+## 12         Wanda Silva                                                   0
+## 13         Alicia Sims                                                   1
+## 14         Emily Logan                                                   3
+## 15     Woodrow Elliott                                                   3
+## 16      Brent Copeland                                                   2
+## 17       Pedro Carlson                                                   1
+## 18          Patsy Luna                                                   1
+## 19       Brett Robbins                                                   0
+## 20       Oliver George                                                   0
+## 21        Calvin Perry                                                   1
+## 22      Lora Gutierrez                                                   1
+## 23    Charlotte Sparks                                                   0
+## 24           Earl Mack                                                   0
+## 25         Leslie Wade                                                   4
+## 26     Santiago Barker                                                   0
+## 27           Jose Bell                                                   0
+## 28         Lynda Smith                                                   0
+## 29   Bradford Marshall                                                   0
+## 30       Irving Miller                                                   0
+## 31    Caroline Simpson                                                   0
+## 32       Frances Welch                                                   0
+## 33       Melba Jenkins                                                   0
+## 34    Veronica Morales                                                   0
+## 35  Juanita Cunningham                                                   0
+## 36      Maurice Howard                                                   0
+## 37         Teri Pierce                                                   0
+## 38       Phil Franklin                                                   0
+## 39       Jan Zimmerman                                                   0
+## 40        Leslie Price                                                   0
+## 41    Bessie Patterson                                                   0
+## 42         Ethel Wolfe                                                   0
+## 43        Naomi Wright                                                   1
+## 44         Sadie Frank                                                   3
+## 45       Lonnie Cannon                                                   3
+## 46         Tony Garcia                                                   2
+## 47        Darla Newton                                                   1
+## 48        Ginger Clark 1.5 - honestly I think one of my cats is half human
+## 49     Lionel Campbell                                                   0
+## 50      Florence Klein                                                   0
+## 51     Harriet Leonard                                                   1
+## 52 Terrence Harrington                                                   0
+## 53       Travis Garner                                                   1
+## 54           Doug Bass                                               three
+## 55          Pat Norris                                                   1
+## 56          Dawn Young                                                   1
+## 57       Shari Alvarez                                                   1
+## 58     Tamara Robinson                                                   0
+## 59        Megan Morgan                                                   0
+## 60         Kara Obrien                                                   2
+##      handedness
+## 1          left
+## 2          left
+## 3          left
+## 4          left
+## 5          left
+## 6          left
+## 7          left
+## 8          left
+## 9          left
+## 10         left
+## 11         left
+## 12         left
+## 13         left
+## 14        right
+## 15        right
+## 16        right
+## 17        right
+## 18        right
+## 19        right
+## 20        right
+## 21        right
+## 22        right
+## 23        right
+## 24        right
+## 25        right
+## 26        right
+## 27        right
+## 28        right
+## 29        right
+## 30        right
+## 31        right
+## 32        right
+## 33        right
+## 34        right
+## 35        right
+## 36        right
+## 37        right
+## 38        right
+## 39        right
+## 40        right
+## 41        right
+## 42        right
+## 43        right
+## 44        right
+## 45        right
+## 46        right
+## 47        right
+## 48        right
+## 49        right
+## 50        right
+## 51        right
+## 52        right
+## 53        right
+## 54        right
+## 55        right
+## 56 ambidextrous
+## 57 ambidextrous
+## 58 ambidextrous
+## 59 ambidextrous
+## 60 ambidextrous</code></pre>
+</div>
+<div id="need-to-open-dplyr-to-use" class="section level1">
+<h1>need to open dplyr to use %&gt;%</h1>
+<pre class="r"><code>library(dplyr)
+cat_lovers %&gt;%
+  summarize(mean_cats = mean(number_of_cats))</code></pre>
+<pre><code>## Warning in mean.default(number_of_cats): argument is not numeric or logical:
+## returning NA</code></pre>
+<pre><code>##   mean_cats
+## 1        NA</code></pre>
+<pre class="r"><code>cat_lovers %&gt;%
+  summarize(mean_cats = mean(number_of_cats, na.rm = TRUE))</code></pre>
+<pre><code>## Warning in mean.default(number_of_cats, na.rm = TRUE): argument is not numeric
+## or logical: returning NA</code></pre>
+<pre><code>##   mean_cats
+## 1        NA</code></pre>
+</div>
+<div id="fixing-dataset" class="section level1">
+<h1>fixing dataset</h1>
+<pre class="r"><code>cat_lovers %&gt;%
+  mutate(number_of_cats = case_when(
+    name == &quot;Ginger Clark&quot; ~ 2,
+    name == &quot;Doug Bass&quot;    ~ 3,
+    TRUE                   ~ as.numeric(number_of_cats)
+    )) %&gt;%
+  summarise(mean_cats = mean(number_of_cats))</code></pre>
+<pre><code>## Warning in eval_tidy(pair$rhs, env = default_env): NAs introduced by coercion</code></pre>
+<pre><code>##   mean_cats
+## 1 0.8333333</code></pre>
+<pre class="r"><code>cat_lovers &lt;- cat_lovers %&gt;%
+  mutate(
+    number_of_cats = case_when(
+      name == &quot;Ginger Clark&quot; ~ &quot;2&quot;,
+      name == &quot;Doug Bass&quot;    ~ &quot;3&quot;,
+      TRUE                   ~ number_of_cats
+      ),
+    number_of_cats = as.numeric(number_of_cats)
+    )</code></pre>
+</div>
+<div id="logical-double-integercharacter" class="section level1">
+<h1>logical, double, integer,character</h1>
+</div>
+<div id="integers-are-indicated-w-an-l" class="section level1">
+<h1>integers are indicated w an L</h1>
+</div>
+<div id="integer---logical---double" class="section level1">
+<h1>integer -&gt; logical -&gt; double</h1>
+</div>
+<div id="double---character" class="section level1">
+<h1>double -&gt; character</h1>
+<pre class="r"><code>typeof(TRUE)</code></pre>
+<pre><code>## [1] &quot;logical&quot;</code></pre>
+<pre class="r"><code>typeof(&quot;hello&quot;)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<pre class="r"><code>typeof(55)</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+<pre class="r"><code>typeof(1:3)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>typeof(4L)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+</div>
+<div id="vectors" class="section level1">
+<h1>Vectors</h1>
+<pre class="r"><code>c(1,2,3,3)</code></pre>
+<pre><code>## [1] 1 2 3 3</code></pre>
+<pre class="r"><code>hellos &lt;- c(&quot;Hello&quot;, &quot;World!&quot;)
+hellos</code></pre>
+<pre><code>## [1] &quot;Hello&quot;  &quot;World!&quot;</code></pre>
+<pre class="r"><code>greet &lt;- c(c(&quot;hi&quot;, &quot;hey&quot;), c(&quot;jello&quot;, &quot;hello&quot;))
+greet</code></pre>
+<pre><code>## [1] &quot;hi&quot;    &quot;hey&quot;   &quot;jello&quot; &quot;hello&quot;</code></pre>
+<p>#explicit coercion
+Number vs Character</p>
+<pre class="r"><code>x &lt;- c(1:3)
+typeof(x)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>typeof(as.character(x))</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<p>Number vs Logical</p>
+<pre class="r"><code>x &lt;-c(&quot;TRUE&quot;, &quot;FALSE&quot;)
+typeof(as.numeric(x))</code></pre>
+<pre><code>## Warning in typeof(as.numeric(x)): NAs introduced by coercion</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+</div>
+<div id="implicit-coercion" class="section level1">
+<h1>implicit coercion</h1>
+<pre class="r"><code>typeof(c(1, FALSE))</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+<pre class="r"><code>typeof(c(&quot;hello&quot;, 1))</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+</div>
