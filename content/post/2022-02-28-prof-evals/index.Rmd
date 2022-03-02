@@ -1,0 +1,193 @@
+---
+title: Prof Evals
+author: ''
+date: '2022-02-28'
+slug: prof-evals
+categories: []
+tags: []
+---
+## Downloading and opening libraries
+```{r}
+library(tidyverse)
+library(moderndive)
+library(skimr)
+library(gapminder)
+```
+
+## Opening data
+```{r}
+evals_ch5 <- evals %>%
+  select(ID, score, bty_avg, age)
+glimpse(evals_ch5)
+# doubles and integers
+```
+```{r}
+evals_ch5 %>%
+  sample_n(size = 5)
+# random sample of 5 arguments of each column, different each time it is run
+```
+
+# Central Measures of Tendancy
+```{r}
+evals_ch5 %>%
+  summarize(mean_bty_avg = mean(bty_avg), mean_score = mean(score),
+            median_bty_avg = median(bty_avg), median_score = median(score))
+# a smaller skew is present
+```
+# Regression values
+```{r}
+evals_ch5 %>% select(score, bty_avg) %>% skim()
+#  skim() takes in a data frame, “skims” it, and returns commonly used summary statistics
+```
+
+# Scatter plot of Score vs Bty_avg
+```{r}
+plot(evals_ch5$score, evals_ch5$bty_avg)
+
+```
+```{r}
+ggplot(evals_ch5, aes(x = bty_avg, y = score))+
+  geom_point() +
+  labs(x = "Beauty Score",
+       y = "Teaching Score", 
+       title = "Scatterplot of relatioinship of teaching and beauty scores")
+```
+> To differentiate between overlapping points, use jitter plot  
+
+```{r}
+ggplot(evals_ch5, aes(x = bty_avg, y = score)) +
+  geom_jitter() +
+  labs(x = "Beauty Score", y = "Teaching Score",
+       title = "Scatterplot of relationship of teaching and beauty scores")
+```
+
+### Getting correlation
+```{r}
+evals_ch5 %>%
+  get_correlation(formula = score ~ bty_avg)
+# ~ is tilde
+```
+> Using summarize   
+
+```{r}
+evals_ch5 %>%
+  summarize(correlation = cor(score, bty_avg))
+```
+## Correlation showing in graph
+```{r}
+ggplot(evals_ch5, aes(x = bty_avg, y = score)) +
+  geom_point() +
+  labs(x = "Beauty Score", y = "Teaching Score",
+       title = "Relationship between teaching and beauty scores") +  
+  geom_smooth(method = "lm", se = FALSE)
+# lm is linear model bar giving line of best fit, se is standard error bars
+```
+> moderndrive package has score_model() and get_regression_table() 
+>> is used to attain the b0 intercept and the bty_avg slope aka. **linear regression table**  
+
+```{r}
+# Fit regression model:
+score_model <- lm(score ~ bty_avg, data = evals_ch5)
+# Get regression table:
+get_regression_table(score_model)
+```
+```{r}
+regress_points <- get_regression_points(score_model)
+regress_points
+```
+score_hat = corresponding value on the regression line for the x values  
+residual = y - yhat = vertical distances between points and regression line  
+
+# Exploratory data analysis
+
+```{r}
+gapminder2007 <- gapminder %>%
+  filter(year == 2007) %>%
+  select(country, lifeExp, continent, gdpPercap)
+glimpse(gapminder2007)
+```
+```{r}
+gapminder2007 %>% sample_n(size = 5)
+gapminder2007 %>%
+  select(lifeExp, continent) %>%
+  skim()
+# summary stats
+```
+## Bar plot
+```{r}
+ggplot(gapminder2007, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(x = "Life expectancy", y = "Number of countries",
+       title = "Histogram of distribution of worldwide life expectancies")
+```
+> add facet wrap  
+
+```{r}
+ggplot(gapminder2007, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(x = "Life expectancy", 
+       y = "Number of countries",
+       title = "Histogram of distribution of worldwide life expectancies") +
+  facet_wrap(~ continent, nrow = 2)
+# separates graphs based on continent
+```
+## Boxplot
+```{r}
+ggplot(gapminder2007, aes(x = continent, y = lifeExp)) +
+  geom_boxplot() +
+  labs(x = "Continent", y = "Life expectancy",
+       title = "Life expectancy by continent")
+```
+
+## Measures of central tendency
+```{r}
+lifeExp_by_continent <- gapminder2007 %>%
+  group_by(continent) %>%
+  summarize(median = median(lifeExp), 
+            mean = mean(lifeExp))
+
+lifeExp_by_continent
+```
+
+### Regression stats
+> “fit” the linear regression model using the lm(y ~ x, data) function and save it in lifeExp_model  
+> get the regression table by applying the get_regression_table() function from the moderndive package to lifeExp_model.  
+
+```{r}
+lifeExp_model <- lm(lifeExp ~ continent, data = gapminder2007)
+get_regression_table(lifeExp_model)
+# lm(y ~ x, data)
+```
+```{r}
+# Compute sum of squared residuals
+regression_points <- get_regression_points(score_model)
+regression_points
+regression_points %>%
+  mutate(squared_residuals = residual^2) %>%
+  summarize(sum_of_squared_residuals = sum(squared_residuals))
+```
+> get_regression_table() function is a wrapper function for some longer code like  
+
+```{r}
+library(broom)
+library(janitor)
+score_model %>%
+  tidy(conf.int = TRUE) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  clean_names() %>%
+  rename(lower_ci = conf_low, upper_ci = conf_high)
+# more roundabout method of getting the regression table aka get_regression_table
+```
+
+> get_regression_points() function is a wrapper function for some longer code like  
+
+```{r}
+library(broom)
+library(janitor)
+score_model %>%
+  augment() %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  clean_names() %>%
+  select(-c("std_resid", "hat", "sigma", "cooksd", "std_resid"))
+```
+

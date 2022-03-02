@@ -1,0 +1,480 @@
+---
+title: Prof Evals
+author: ''
+date: '2022-02-28'
+slug: prof-evals
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="downloading-and-opening-libraries" class="section level2">
+<h2>Downloading and opening libraries</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.6     v dplyr   1.0.7
+## v tidyr   1.2.0     v stringr 1.4.0
+## v readr   2.1.2     v forcats 0.5.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(moderndive)
+library(skimr)
+library(gapminder)</code></pre>
+</div>
+<div id="opening-data" class="section level2">
+<h2>Opening data</h2>
+<pre class="r"><code>evals_ch5 &lt;- evals %&gt;%
+  select(ID, score, bty_avg, age)
+glimpse(evals_ch5)</code></pre>
+<pre><code>## Rows: 463
+## Columns: 4
+## $ ID      &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,~
+## $ score   &lt;dbl&gt; 4.7, 4.1, 3.9, 4.8, 4.6, 4.3, 2.8, 4.1, 3.4, 4.5, 3.8, 4.5, 4.~
+## $ bty_avg &lt;dbl&gt; 5.000, 5.000, 5.000, 5.000, 3.000, 3.000, 3.000, 3.333, 3.333,~
+## $ age     &lt;int&gt; 36, 36, 36, 36, 59, 59, 59, 51, 51, 40, 40, 40, 40, 40, 40, 40~</code></pre>
+<pre class="r"><code># doubles and integers</code></pre>
+<pre class="r"><code>evals_ch5 %&gt;%
+  sample_n(size = 5)</code></pre>
+<pre><code>## # A tibble: 5 x 4
+##      ID score bty_avg   age
+##   &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;
+## 1   445   4.9    4.5     52
+## 2    12   4.5    3.17    40
+## 3   121   3.7    4.83    52
+## 4    43   4.8    4.67    33
+## 5   277   4.9    6.5     38</code></pre>
+<pre class="r"><code># random sample of 5 arguments of each column, different each time it is run</code></pre>
+</div>
+<div id="central-measures-of-tendancy" class="section level1">
+<h1>Central Measures of Tendancy</h1>
+<pre class="r"><code>evals_ch5 %&gt;%
+  summarize(mean_bty_avg = mean(bty_avg), mean_score = mean(score),
+            median_bty_avg = median(bty_avg), median_score = median(score))</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##   mean_bty_avg mean_score median_bty_avg median_score
+##          &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+## 1         4.42       4.17           4.33          4.3</code></pre>
+<pre class="r"><code># a smaller skew is present</code></pre>
+</div>
+<div id="regression-values" class="section level1">
+<h1>Regression values</h1>
+<pre class="r"><code>evals_ch5 %&gt;% select(score, bty_avg) %&gt;% skim()</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-5">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">463</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">score</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.17</td>
+<td align="right">0.54</td>
+<td align="right">2.30</td>
+<td align="right">3.80</td>
+<td align="right">4.30</td>
+<td align="right">4.6</td>
+<td align="right">5.00</td>
+<td align="left">▁▁▅▇▇</td>
+</tr>
+<tr class="even">
+<td align="left">bty_avg</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.42</td>
+<td align="right">1.53</td>
+<td align="right">1.67</td>
+<td align="right">3.17</td>
+<td align="right">4.33</td>
+<td align="right">5.5</td>
+<td align="right">8.17</td>
+<td align="left">▃▇▇▃▂</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#  skim() takes in a data frame, “skims” it, and returns commonly used summary statistics</code></pre>
+</div>
+<div id="scatter-plot-of-score-vs-bty_avg" class="section level1">
+<h1>Scatter plot of Score vs Bty_avg</h1>
+<pre class="r"><code>plot(evals_ch5$score, evals_ch5$bty_avg)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(evals_ch5, aes(x = bty_avg, y = score))+
+  geom_point() +
+  labs(x = &quot;Beauty Score&quot;,
+       y = &quot;Teaching Score&quot;, 
+       title = &quot;Scatterplot of relatioinship of teaching and beauty scores&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+&gt; To differentiate between overlapping points, use jitter plot</p>
+<pre class="r"><code>ggplot(evals_ch5, aes(x = bty_avg, y = score)) +
+  geom_jitter() +
+  labs(x = &quot;Beauty Score&quot;, y = &quot;Teaching Score&quot;,
+       title = &quot;Scatterplot of relationship of teaching and beauty scores&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<div id="getting-correlation" class="section level3">
+<h3>Getting correlation</h3>
+<pre class="r"><code>evals_ch5 %&gt;%
+  get_correlation(formula = score ~ bty_avg)</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##     cor
+##   &lt;dbl&gt;
+## 1 0.187</code></pre>
+<pre class="r"><code># ~ is tilde</code></pre>
+<blockquote>
+<p>Using summarize</p>
+</blockquote>
+<pre class="r"><code>evals_ch5 %&gt;%
+  summarize(correlation = cor(score, bty_avg))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   correlation
+##         &lt;dbl&gt;
+## 1       0.187</code></pre>
+</div>
+<div id="correlation-showing-in-graph" class="section level2">
+<h2>Correlation showing in graph</h2>
+<pre class="r"><code>ggplot(evals_ch5, aes(x = bty_avg, y = score)) +
+  geom_point() +
+  labs(x = &quot;Beauty Score&quot;, y = &quot;Teaching Score&quot;,
+       title = &quot;Relationship between teaching and beauty scores&quot;) +  
+  geom_smooth(method = &quot;lm&quot;, se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code># lm is linear model bar giving line of best fit, se is standard error bars</code></pre>
+<blockquote>
+<p>moderndrive package has score_model() and get_regression_table()
+&gt; is used to attain the b0 intercept and the bty_avg slope aka. <strong>linear regression table</strong></p>
+</blockquote>
+<pre class="r"><code># Fit regression model:
+score_model &lt;- lm(score ~ bty_avg, data = evals_ch5)
+# Get regression table:
+get_regression_table(score_model)</code></pre>
+<pre><code>## # A tibble: 2 x 7
+##   term      estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 intercept    3.88      0.076     51.0        0    3.73     4.03 
+## 2 bty_avg      0.067     0.016      4.09       0    0.035    0.099</code></pre>
+<pre class="r"><code>regress_points &lt;- get_regression_points(score_model)
+regress_points</code></pre>
+<pre><code>## # A tibble: 463 x 5
+##       ID score bty_avg score_hat residual
+##    &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1     1   4.7    5         4.21    0.486
+##  2     2   4.1    5         4.21   -0.114
+##  3     3   3.9    5         4.21   -0.314
+##  4     4   4.8    5         4.21    0.586
+##  5     5   4.6    3         4.08    0.52 
+##  6     6   4.3    3         4.08    0.22 
+##  7     7   2.8    3         4.08   -1.28 
+##  8     8   4.1    3.33      4.10   -0.002
+##  9     9   3.4    3.33      4.10   -0.702
+## 10    10   4.5    3.17      4.09    0.409
+## # ... with 453 more rows</code></pre>
+<p>score_hat = corresponding value on the regression line for the x values<br />
+residual = y - yhat = vertical distances between points and regression line</p>
+</div>
+</div>
+<div id="exploratory-data-analysis" class="section level1">
+<h1>Exploratory data analysis</h1>
+<pre class="r"><code>gapminder2007 &lt;- gapminder %&gt;%
+  filter(year == 2007) %&gt;%
+  select(country, lifeExp, continent, gdpPercap)
+glimpse(gapminder2007)</code></pre>
+<pre><code>## Rows: 142
+## Columns: 4
+## $ country   &lt;fct&gt; &quot;Afghanistan&quot;, &quot;Albania&quot;, &quot;Algeria&quot;, &quot;Angola&quot;, &quot;Argentina&quot;, ~
+## $ lifeExp   &lt;dbl&gt; 43.828, 76.423, 72.301, 42.731, 75.320, 81.235, 79.829, 75.6~
+## $ continent &lt;fct&gt; Asia, Europe, Africa, Africa, Americas, Oceania, Europe, Asi~
+## $ gdpPercap &lt;dbl&gt; 974.5803, 5937.0295, 6223.3675, 4797.2313, 12779.3796, 34435~</code></pre>
+<pre class="r"><code>gapminder2007 %&gt;% sample_n(size = 5)</code></pre>
+<pre><code>## # A tibble: 5 x 4
+##   country        lifeExp continent gdpPercap
+##   &lt;fct&gt;            &lt;dbl&gt; &lt;fct&gt;         &lt;dbl&gt;
+## 1 Czech Republic    76.5 Europe       22833.
+## 2 Lebanon           72.0 Asia         10461.
+## 3 Germany           79.4 Europe       32170.
+## 4 Singapore         80.0 Asia         47143.
+## 5 Montenegro        74.5 Europe        9254.</code></pre>
+<pre class="r"><code>gapminder2007 %&gt;%
+  select(lifeExp, continent) %&gt;%
+  skim()</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-15">Table 2: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">142</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">factor</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">ordered</th>
+<th align="right">n_unique</th>
+<th align="left">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">continent</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">5</td>
+<td align="left">Afr: 52, Asi: 33, Eur: 30, Ame: 25</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">lifeExp</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">67.01</td>
+<td align="right">12.07</td>
+<td align="right">39.61</td>
+<td align="right">57.16</td>
+<td align="right">71.94</td>
+<td align="right">76.41</td>
+<td align="right">82.6</td>
+<td align="left">▂▃▃▆▇</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># summary stats</code></pre>
+<div id="bar-plot" class="section level2">
+<h2>Bar plot</h2>
+<pre class="r"><code>ggplot(gapminder2007, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = &quot;white&quot;) +
+  labs(x = &quot;Life expectancy&quot;, y = &quot;Number of countries&quot;,
+       title = &quot;Histogram of distribution of worldwide life expectancies&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+&gt; add facet wrap</p>
+<pre class="r"><code>ggplot(gapminder2007, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = &quot;white&quot;) +
+  labs(x = &quot;Life expectancy&quot;, 
+       y = &quot;Number of countries&quot;,
+       title = &quot;Histogram of distribution of worldwide life expectancies&quot;) +
+  facet_wrap(~ continent, nrow = 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code># separates graphs based on continent</code></pre>
+</div>
+<div id="boxplot" class="section level2">
+<h2>Boxplot</h2>
+<pre class="r"><code>ggplot(gapminder2007, aes(x = continent, y = lifeExp)) +
+  geom_boxplot() +
+  labs(x = &quot;Continent&quot;, y = &quot;Life expectancy&quot;,
+       title = &quot;Life expectancy by continent&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="measures-of-central-tendency" class="section level2">
+<h2>Measures of central tendency</h2>
+<pre class="r"><code>lifeExp_by_continent &lt;- gapminder2007 %&gt;%
+  group_by(continent) %&gt;%
+  summarize(median = median(lifeExp), 
+            mean = mean(lifeExp))
+
+lifeExp_by_continent</code></pre>
+<pre><code>## # A tibble: 5 x 3
+##   continent median  mean
+##   &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt;
+## 1 Africa      52.9  54.8
+## 2 Americas    72.9  73.6
+## 3 Asia        72.4  70.7
+## 4 Europe      78.6  77.6
+## 5 Oceania     80.7  80.7</code></pre>
+<div id="regression-stats" class="section level3">
+<h3>Regression stats</h3>
+<blockquote>
+<p>“fit” the linear regression model using the lm(y ~ x, data) function and save it in lifeExp_model<br />
+get the regression table by applying the get_regression_table() function from the moderndive package to lifeExp_model.</p>
+</blockquote>
+<pre class="r"><code>lifeExp_model &lt;- lm(lifeExp ~ continent, data = gapminder2007)
+get_regression_table(lifeExp_model)</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##   term                estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;                  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 intercept               54.8      1.02     53.4        0     52.8     56.8
+## 2 continent: Americas     18.8      1.8      10.4        0     15.2     22.4
+## 3 continent: Asia         15.9      1.65      9.68       0     12.7     19.2
+## 4 continent: Europe       22.8      1.70     13.5        0     19.5     26.2
+## 5 continent: Oceania      25.9      5.33      4.86       0     15.4     36.4</code></pre>
+<pre class="r"><code># lm(y ~ x, data)</code></pre>
+<pre class="r"><code># Compute sum of squared residuals
+regression_points &lt;- get_regression_points(score_model)
+regression_points</code></pre>
+<pre><code>## # A tibble: 463 x 5
+##       ID score bty_avg score_hat residual
+##    &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1     1   4.7    5         4.21    0.486
+##  2     2   4.1    5         4.21   -0.114
+##  3     3   3.9    5         4.21   -0.314
+##  4     4   4.8    5         4.21    0.586
+##  5     5   4.6    3         4.08    0.52 
+##  6     6   4.3    3         4.08    0.22 
+##  7     7   2.8    3         4.08   -1.28 
+##  8     8   4.1    3.33      4.10   -0.002
+##  9     9   3.4    3.33      4.10   -0.702
+## 10    10   4.5    3.17      4.09    0.409
+## # ... with 453 more rows</code></pre>
+<pre class="r"><code>regression_points %&gt;%
+  mutate(squared_residuals = residual^2) %&gt;%
+  summarize(sum_of_squared_residuals = sum(squared_residuals))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   sum_of_squared_residuals
+##                      &lt;dbl&gt;
+## 1                     132.</code></pre>
+<blockquote>
+<p>get_regression_table() function is a wrapper function for some longer code like</p>
+</blockquote>
+<pre class="r"><code>library(broom)
+library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>score_model %&gt;%
+  tidy(conf.int = TRUE) %&gt;%
+  mutate_if(is.numeric, round, digits = 3) %&gt;%
+  clean_names() %&gt;%
+  rename(lower_ci = conf_low, upper_ci = conf_high)</code></pre>
+<pre><code>## # A tibble: 2 x 7
+##   term        estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    3.88      0.076     51.0        0    3.73     4.03 
+## 2 bty_avg        0.067     0.016      4.09       0    0.035    0.099</code></pre>
+<pre class="r"><code># more roundabout method of getting the regression table aka get_regression_table</code></pre>
+<blockquote>
+<p>get_regression_points() function is a wrapper function for some longer code like</p>
+</blockquote>
+<pre class="r"><code>library(broom)
+library(janitor)
+score_model %&gt;%
+  augment() %&gt;%
+  mutate_if(is.numeric, round, digits = 3) %&gt;%
+  clean_names() %&gt;%
+  select(-c(&quot;std_resid&quot;, &quot;hat&quot;, &quot;sigma&quot;, &quot;cooksd&quot;, &quot;std_resid&quot;))</code></pre>
+<pre><code>## # A tibble: 463 x 4
+##    score bty_avg fitted  resid
+##    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1   4.7    5      4.21  0.486
+##  2   4.1    5      4.21 -0.114
+##  3   3.9    5      4.21 -0.314
+##  4   4.8    5      4.21  0.586
+##  5   4.6    3      4.08  0.52 
+##  6   4.3    3      4.08  0.22 
+##  7   2.8    3      4.08 -1.28 
+##  8   4.1    3.33   4.10 -0.002
+##  9   3.4    3.33   4.10 -0.702
+## 10   4.5    3.17   4.09  0.409
+## # ... with 453 more rows</code></pre>
+</div>
+</div>
+</div>
