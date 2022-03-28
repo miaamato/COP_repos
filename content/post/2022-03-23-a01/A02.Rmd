@@ -1,0 +1,204 @@
+---
+title: A02
+author: ''
+date: '2022-03-24'
+slug: a01
+categories: []
+tags: []
+---
+```{r}
+# excel file reading
+library(readxl)
+prof_props <- read_excel(file.choose())
+prof_props
+```
+## Installing packages for linear regression
+```{r}
+library(boot)
+# install.packages('ISLR')
+library(ggplot2)
+library(ISLR)
+library(dplyr)
+```
+
+```{r}
+glimpse(prof_props)
+
+```
+### Prep
+```{r}
+set.seed(1)
+train <- sample(440, 220)
+head(train)
+```
+
+```{r}
+attach(prof_props)
+```
+
+## Attempt to transform descriptive data into metric
+```{r}
+# Clarity
+# ordered_Clar <- sort(Clarity)
+fact <- factor(Clarity)
+fact_Clarity <- as.numeric(fact)
+fact_Clarity
+```
+
+```{r}
+# Symmetry
+# ordered_Symm <- sort(Symmetry)
+fact1 <- factor(Symmetry)
+fact_Symm <- as.numeric(fact1)
+fact_Symm
+# Certification
+# ordered_Cert <- sort(Certification)
+fact2 <- factor(Certification)
+fact_Cert <- as.numeric(fact2)
+fact_Cert
+# Polish
+# ordered_Pol <- sort(Polish)
+fact3 <- factor(Polish)
+fact_Pol <- as.numeric(fact3)
+fact_Pol
+# Wholesaler
+# ordered_Wh <- sort(Wholesaler)
+fact4 <- factor(Wholesaler)
+fact_Wh <- as.numeric(fact4)
+fact_Wh
+```
+
+## Linear Model fitting
+```{r}
+lm.fit <- lm(Price~Cut, data = prof_props, subset = train)
+lm.fit
+```
+# Bootstrap 1
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Cut, data = data, subset = index))
+}
+```
+
+```{r}
+int <- boot_func(prof_props, 1:440)
+int
+```
+```{r}
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+```
+
+```{r}
+boot.out <- boot(prof_props, boot_func, 1001)
+boot.out
+plot(boot.out)
+```
+# Bootstrap 2
+```{r}
+boot.func <- function(data, index){
+return(coef(lm(Price ~ fact_Symm, data=data,subset=index)))
+}
+boot.func(prof_props, 1:440)
+set.seed(1)
+boot.func(prof_props, sample(440, 440, replace=T))
+boot.out2 <- boot(prof_props, boot.func, 1001)
+```
+
+```{r}
+plot(boot.out2)
+```
+
+# Bootstrap 3
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Colour, data = data, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out3 <- boot(prof_props, boot_func, 1001)
+boot.out3
+```
+```{r}
+plot(boot.out3)
+```
+# Bootstrap 4
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Carat, data = data, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out4 <- boot(prof_props, boot_func, 1001)
+boot.out4
+```
+```{r}
+plot(boot.out4)
+```
+
+# Bootstrap 5
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ fact_Clarity, data = data, subset = index))
+}
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out5 <- boot(prof_props, boot_func, 1001)
+boot.out5
+```
+
+```{r}
+plot(boot.out5)
+```
+
+# Bootstrap 6
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ fact_Cert, data = data, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out6 <- boot(prof_props, boot_func, 1001)
+boot.out6
+```
+```{r}
+plot(boot.out6)
+```
+
+# Bootstrp 7
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ fact_Pol, data = data, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out7 <- boot(prof_props, boot_func, 1001)
+boot.out7
+```
+```{r}
+plot(boot.out7)
+```
+# Bootstrap 8
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ fact_Wh, data = data, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out8 <- boot(prof_props, boot_func, 1001)
+boot.out8
+```
+```{r}
+plot(boot.out8)
+```
+

@@ -1,8 +1,8 @@
 ---
-title: A01
+title: ShinyDAM
 author: ''
 date: '2022-03-23'
-slug: a01
+slug: shinydam
 categories: []
 tags: []
 ---
