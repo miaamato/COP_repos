@@ -1,0 +1,381 @@
+---
+title: A02
+author: ''
+date: '2022-03-24'
+slug: a01
+categories: []
+tags: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code># excel file reading
+library(readxl)
+prof_props &lt;- read_excel(file.choose())
+prof_props</code></pre>
+<pre><code>## # A tibble: 440 x 9
+##    Carat Colour Clarity Cut   Certification Polish Symmetry Price              
+##    &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;    &lt;dttm&gt;             
+##  1  0.92 I      SI2     G     AGS           V      V        1908-03-18 00:00:00
+##  2  0.92 I      SI2     V     AGS           G      G        1908-03-18 00:00:00
+##  3  0.82 F      SI2     I     GIA           X      X        1908-03-22 00:00:00
+##  4  0.81 G      SI1     I     GIA           X      V        1908-03-22 00:00:00
+##  5  0.9  J      VS2     V     GIA           V      V        1908-03-24 00:00:00
+##  6  0.87 F      SI2     I     AGS           G      V        1908-03-25 00:00:00
+##  7  0.8  D      SI2     I     GIA           V      V        1908-03-26 00:00:00
+##  8  0.84 F      SI1     G     GIA           V      V        1908-03-28 00:00:00
+##  9  0.8  D      SI2     V     GIA           V      V        1908-03-30 00:00:00
+## 10  0.8  D      SI2     V     GIA           V      X        1908-03-30 00:00:00
+## # ... with 430 more rows, and 1 more variable: Wholesaler &lt;dbl&gt;</code></pre>
+<div id="installing-packages-for-linear-regression" class="section level2">
+<h2>Installing packages for linear regression</h2>
+<pre class="r"><code>library(boot)
+# install.packages(&#39;ISLR&#39;)
+library(ggplot2)
+library(ISLR)</code></pre>
+<pre><code>## Warning: package &#39;ISLR&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>glimpse(prof_props)</code></pre>
+<pre><code>## Rows: 440
+## Columns: 9
+## $ Carat         &lt;dbl&gt; 0.92, 0.92, 0.82, 0.81, 0.90, 0.87, 0.80, 0.84, 0.80, 0.~
+## $ Colour        &lt;chr&gt; &quot;I&quot;, &quot;I&quot;, &quot;F&quot;, &quot;G&quot;, &quot;J&quot;, &quot;F&quot;, &quot;D&quot;, &quot;F&quot;, &quot;D&quot;, &quot;D&quot;, &quot;G&quot;, &quot;~
+## $ Clarity       &lt;chr&gt; &quot;SI2&quot;, &quot;SI2&quot;, &quot;SI2&quot;, &quot;SI1&quot;, &quot;VS2&quot;, &quot;SI2&quot;, &quot;SI2&quot;, &quot;SI1&quot;, ~
+## $ Cut           &lt;chr&gt; &quot;G&quot;, &quot;V&quot;, &quot;I&quot;, &quot;I&quot;, &quot;V&quot;, &quot;I&quot;, &quot;I&quot;, &quot;G&quot;, &quot;V&quot;, &quot;V&quot;, &quot;I&quot;, &quot;~
+## $ Certification &lt;chr&gt; &quot;AGS&quot;, &quot;AGS&quot;, &quot;GIA&quot;, &quot;GIA&quot;, &quot;GIA&quot;, &quot;AGS&quot;, &quot;GIA&quot;, &quot;GIA&quot;, ~
+## $ Polish        &lt;chr&gt; &quot;V&quot;, &quot;G&quot;, &quot;X&quot;, &quot;X&quot;, &quot;V&quot;, &quot;G&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;~
+## $ Symmetry      &lt;chr&gt; &quot;V&quot;, &quot;G&quot;, &quot;X&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;X&quot;, &quot;V&quot;, &quot;~
+## $ Price         &lt;dttm&gt; 1908-03-18, 1908-03-18, 1908-03-22, 1908-03-22, 1908-03~
+## $ Wholesaler    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,~</code></pre>
+<div id="prep" class="section level3">
+<h3>Prep</h3>
+<pre class="r"><code>set.seed(1)
+train &lt;- sample(440, 220)
+head(train)</code></pre>
+<pre><code>## [1] 324 167 129 418 299 270</code></pre>
+<pre class="r"><code>attach(prof_props)</code></pre>
+</div>
+</div>
+<div id="attempt-to-transform-descriptive-data-into-metric" class="section level2">
+<h2>Attempt to transform descriptive data into metric</h2>
+<pre class="r"><code># Clarity
+# ordered_Clar &lt;- sort(Clarity)
+fact &lt;- factor(Clarity)
+fact_Clarity &lt;- as.numeric(fact)
+fact_Clarity</code></pre>
+<pre><code>##   [1] 4 4 4 3 7 4 4 3 4 4 4 4 6 3 3 3 3 3 4 4 4 6 6 3 3 4 4 7 3 4 4 4 4 4 3 4 4
+##  [38] 4 6 3 4 6 6 4 7 4 6 4 4 4 3 4 3 7 4 3 7 3 4 3 5 5 2 2 1 1 2 2 2 2 1 2 1 1
+##  [75] 5 1 1 5 2 1 1 1 1 2 1 1 1 1 2 2 5 1 2 1 1 5 2 1 2 5 2 2 1 2 1 1 1 1 1 4 4
+## [112] 1 5 1 2 1 1 2 2 5 5 1 1 1 1 1 4 3 1 1 1 7 5 1 1 4 5 1 2 4 4 4 4 1 5 3 1 1
+## [149] 3 5 5 4 1 6 4 1 1 1 4 4 5 4 4 4 1 1 4 4 5 4 4 4 4 4 4 4 1 1 3 3 1 4 5 4 1
+## [186] 1 2 5 1 1 1 1 2 1 1 1 1 4 5 2 1 5 2 2 1 5 1 1 4 5 1 5 7 5 3 5 4 1 3 1 1 1
+## [223] 1 2 2 3 1 4 4 1 1 4 4 1 4 1 1 1 3 3 3 3 3 3 6 7 6 7 7 3 3 3 4 6 6 3 6 7 3
+## [260] 7 3 7 3 3 3 3 7 9 3 7 7 3 3 3 3 3 3 9 3 3 7 3 3 7 9 9 1 4 4 4 1 3 3 3 6 7
+## [297] 4 4 3 3 3 3 3 1 4 4 4 4 4 4 3 4 7 7 7 7 7 7 4 4 4 3 3 4 4 4 4 4 4 4 4 4 4
+## [334] 4 4 4 4 3 3 3 3 4 4 4 4 4 4 4 3 3 3 3 3 3 3 3 3 3 3 3 3 6 6 6 6 6 6 6 6 6
+## [371] 6 6 6 6 6 6 6 9 4 3 3 3 3 4 3 4 4 3 3 3 3 3 3 7 4 4 4 4 3 3 3 3 3 3 3 3 3
+## [408] 3 3 3 3 3 3 3 3 3 3 3 3 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 8 8 3 3 3 3</code></pre>
+<pre class="r"><code># Symmetry
+# ordered_Symm &lt;- sort(Symmetry)
+fact1 &lt;- factor(Symmetry)
+fact_Symm &lt;- as.numeric(fact1)
+fact_Symm</code></pre>
+<pre><code>##   [1] 4 2 5 4 4 4 4 4 4 5 4 5 4 5 4 4 4 4 5 5 2 3 3 4 4 2 2 2 3 4 2 4 4 2 5 5 2
+##  [38] 2 3 2 2 2 4 4 5 2 4 4 4 4 2 4 5 3 2 2 5 4 4 4 1 2 4 4 2 2 1 1 2 4 2 4 1 2
+##  [75] 1 2 2 2 2 1 2 2 1 1 1 2 2 2 2 2 4 2 4 2 4 2 2 5 2 2 1 4 2 4 4 4 2 4 2 2 1
+## [112] 4 2 5 2 2 2 4 2 2 2 2 4 2 2 2 4 5 1 2 2 5 5 4 4 2 2 2 2 2 5 2 4 2 2 5 2 4
+## [149] 2 2 5 2 4 4 1 2 2 4 2 4 2 4 4 2 2 4 2 4 4 4 5 4 4 5 4 4 4 2 4 4 2 4 2 5 2
+## [186] 1 2 2 4 2 2 2 2 4 2 4 2 2 4 2 1 4 4 1 2 4 2 5 4 1 2 2 2 2 2 1 4 4 4 5 4 2
+## [223] 2 2 2 5 2 4 1 2 4 2 4 5 4 4 1 4 2 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+## [260] 2 2 4 2 2 2 2 2 2 4 2 2 2 2 2 2 4 4 4 2 2 2 2 2 4 5 5 4 4 4 4 4 5 5 4 4 4
+## [297] 4 5 2 4 2 4 4 4 4 4 4 4 4 4 4 2 4 4 4 4 4 4 5 4 5 5 4 2 4 4 4 2 4 4 4 4 4
+## [334] 4 4 4 4 4 4 5 5 2 5 4 4 4 4 4 4 4 4 4 4 4 4 2 2 4 4 4 4 4 4 4 5 5 4 4 4 4
+## [371] 4 4 4 5 2 4 4 4 4 4 4 4 4 4 4 5 4 5 2 4 2 5 2 4 2 5 4 4 2 5 4 5 2 4 4 4 4
+## [408] 4 4 4 4 4 4 4 4 4 4 4 4 5 4 5 4 4 4 4 4 4 5 4 4 4 4 4 4 4 4 4 5 5</code></pre>
+<pre class="r"><code># Certification
+# ordered_Cert &lt;- sort(Certification)
+fact2 &lt;- factor(Certification)
+fact_Cert &lt;- as.numeric(fact2)
+fact_Cert</code></pre>
+<pre><code>##   [1] 1 1 4 4 4 1 4 4 4 4 4 4 1 4 4 4 1 4 4 4 4 1 1 4 4 4 4 4 1 4 4 4 4 4 4 4 1
+##  [38] 4 1 4 4 4 4 4 1 4 4 4 4 4 4 4 4 1 4 4 4 4 4 4 3 3 4 4 3 3 4 2 4 4 4 4 3 3
+##  [75] 3 3 3 3 4 3 3 3 3 4 3 4 3 3 3 4 3 3 4 3 3 3 4 3 4 3 4 4 3 4 3 3 3 3 3 3 3
+## [112] 3 3 3 4 4 4 4 4 3 3 4 4 4 4 3 3 3 4 3 3 3 3 4 4 3 3 4 4 3 3 3 4 4 3 3 3 4
+## [149] 3 3 3 3 4 3 4 4 3 3 3 3 3 4 3 3 4 3 4 3 3 3 3 3 3 3 3 3 3 4 3 3 3 3 3 3 3
+## [186] 4 4 3 3 3 3 3 4 3 3 3 4 3 3 4 3 3 4 4 4 3 4 3 3 3 4 3 4 3 3 3 4 3 3 3 3 3
+## [223] 4 4 4 3 3 4 3 3 3 3 4 3 3 3 4 4 3 3 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5
+## [260] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 4 4 4 4 4 4 4 4 4 4 4 4 4
+## [297] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+## [334] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+## [371] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+## [408] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4</code></pre>
+<pre class="r"><code># Polish
+# ordered_Pol &lt;- sort(Polish)
+fact3 &lt;- factor(Polish)
+fact_Pol &lt;- as.numeric(fact3)
+fact_Pol</code></pre>
+<pre><code>##   [1] 5 2 6 6 5 2 5 5 5 5 5 6 2 6 5 5 5 6 5 6 2 3 3 6 2 5 2 2 3 5 5 2 5 2 6 5 2
+##  [38] 5 3 2 5 2 5 5 6 5 6 5 5 6 2 5 6 3 4 5 6 5 5 5 1 2 5 2 2 5 2 2 2 2 6 5 2 2
+##  [75] 1 2 2 2 2 2 2 2 2 5 2 5 2 2 5 2 2 2 5 5 5 2 2 5 2 2 1 5 2 2 5 5 2 5 2 2 2
+## [112] 2 2 5 2 2 2 5 2 2 2 5 2 2 5 5 5 5 2 5 2 6 5 6 6 5 2 5 2 2 5 5 5 2 5 5 2 5
+## [149] 5 2 6 5 5 2 2 5 2 2 5 5 2 6 2 2 2 2 6 2 2 5 5 5 5 5 5 2 5 2 5 2 2 2 2 5 5
+## [186] 2 2 2 2 2 2 5 2 5 2 5 2 5 5 2 2 2 5 1 2 5 2 5 5 2 5 2 2 2 5 1 5 5 2 5 2 2
+## [223] 5 2 2 5 2 5 2 2 2 2 5 6 5 2 2 5 5 2 2 2 5 2 5 5 2 2 5 2 2 2 5 2 2 2 2 2 2
+## [260] 2 2 5 5 2 2 2 5 5 5 2 5 2 2 2 2 5 5 5 2 2 5 2 2 5 5 5 2 5 5 2 5 2 6 6 6 5
+## [297] 2 6 5 6 6 5 5 5 5 5 5 5 5 5 5 2 5 5 2 5 5 5 6 6 6 5 5 2 5 5 2 5 5 5 2 5 5
+## [334] 5 6 5 5 6 5 5 6 2 5 5 6 5 5 2 5 5 2 5 5 5 2 5 2 5 5 5 6 6 5 5 5 5 5 5 5 2
+## [371] 5 6 5 6 5 5 5 5 6 5 2 5 6 5 5 6 6 6 5 5 2 6 5 6 2 6 2 5 5 2 5 5 2 2 6 6 5
+## [408] 5 5 6 6 5 6 5 5 5 2 6 5 5 5 6 5 6 5 5 5 6 5 6 2 2 6 6 6 6 5 5 6 5</code></pre>
+<pre class="r"><code># Wholesaler
+# ordered_Wh &lt;- sort(Wholesaler)
+fact4 &lt;- factor(Wholesaler)
+fact_Wh &lt;- as.numeric(fact4)
+fact_Wh</code></pre>
+<pre><code>##   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [38] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+##  [75] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+## [112] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+## [149] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+## [186] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+## [223] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+## [260] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+## [297] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+## [334] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+## [371] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+## [408] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</code></pre>
+</div>
+<div id="linear-model-fitting" class="section level2">
+<h2>Linear Model fitting</h2>
+<pre class="r"><code>lm.fit &lt;- lm(Price~Cut, data = prof_props, subset = train)
+lm.fit</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Price ~ Cut, data = prof_props, subset = train)
+## 
+## Coefficients:
+## (Intercept)         CutG         CutI         CutV         CutX  
+##  -1.995e+09   -1.150e+07   -6.287e+07   -1.078e+08   -8.292e+07</code></pre>
+</div>
+<div id="bootstrap-1" class="section level1">
+<h1>Bootstrap 1</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Cut, data = data, subset = index))
+}</code></pre>
+<pre class="r"><code>int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)        CutG        CutI        CutV        CutX 
+## -1997030563   -35354874   -62506330  -110342930   -68878678</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))</code></pre>
+<pre class="r"><code>boot.out &lt;- boot(prof_props, boot_func, 1001)
+boot.out</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original      bias    std. error
+## t1* -1997030563    40932.94     6757820
+## t2*   -35354874 -1081516.90    15792301
+## t3*   -62506330    87481.53    13428802
+## t4*  -110342930  -491270.22    11979575
+## t5*   -68878678    96674.08    10698337</code></pre>
+<pre class="r"><code>plot(boot.out)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+# Bootstrap 2</p>
+<pre class="r"><code>boot.func &lt;- function(data, index){
+return(coef(lm(Price ~ fact_Symm, data=data,subset=index)))
+}
+boot.func(prof_props, 1:440)</code></pre>
+<pre><code>## (Intercept)   fact_Symm 
+## -2013457933   -14587878</code></pre>
+<pre class="r"><code>set.seed(1)
+boot.func(prof_props, sample(440, 440, replace=T))</code></pre>
+<pre><code>## (Intercept)   fact_Symm 
+## -2005034841   -17193566</code></pre>
+<pre class="r"><code>boot.out2 &lt;- boot(prof_props, boot.func, 1001)</code></pre>
+<pre class="r"><code>plot(boot.out2)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+<div id="bootstrap-3" class="section level1">
+<h1>Bootstrap 3</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Colour, data = data, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)     ColourE     ColourF     ColourG     ColourH     ColourI 
+## -2009041920   -66034880   -84875487   -12764294   -75506542   -66172338 
+##     ColourJ     ColourK     ColourL 
+##   -46248480     3633817     4518720</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out3 &lt;- boot(prof_props, boot_func, 1001)
+boot.out3</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original     bias    std. error
+## t1* -2009041920 -266872.29    22947266
+## t2*   -66034880 1222967.59    27422478
+## t3*   -84875487  135345.56    26274724
+## t4*   -12764294 -470599.16    27513496
+## t5*   -75506542  154878.71    25440677
+## t6*   -66172338  156930.84    25504762
+## t7*   -46248480   70710.86    26073125
+## t8*     3633817  626122.42    25673852
+## t9*     4518720  342755.48    23995588</code></pre>
+<pre class="r"><code>plot(boot.out3)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+# Bootstrap 4</p>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Carat, data = data, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)       Carat 
+## -2226483383   247512889</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out4 &lt;- boot(prof_props, boot_func, 1001)
+boot.out4</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original     bias    std. error
+## t1* -2226483383   79884.52     2094837
+## t2*   247512889 -238982.37     4680885</code></pre>
+<pre class="r"><code>plot(boot.out4)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="bootstrap-5" class="section level1">
+<h1>Bootstrap 5</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ fact_Clarity, data = data, subset = index))
+}
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out5 &lt;- boot(prof_props, boot_func, 1001)
+boot.out5</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original     bias    std. error
+## t1* -1998921040 -236797.08     7650871
+## t2*   -17198428   31621.23     1947359</code></pre>
+<pre class="r"><code>plot(boot.out5)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+</div>
+<div id="bootstrap-6" class="section level1">
+<h1>Bootstrap 6</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ fact_Cert, data = data, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)   fact_Cert 
+## -1763619138   -79450272</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out6 &lt;- boot(prof_props, boot_func, 1001)
+boot.out6</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original    bias    std. error
+## t1* -1763619138 1647310.1    18264517
+## t2*   -79450272 -415500.1     4901781</code></pre>
+<pre class="r"><code>plot(boot.out6)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+</div>
+<div id="bootstrp-7" class="section level1">
+<h1>Bootstrp 7</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ fact_Pol, data = data, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)    fact_Pol 
+## -2018003994   -10862139</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out7 &lt;- boot(prof_props, boot_func, 1001)
+boot.out7</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original    bias    std. error
+## t1* -2018003994  95406.97    11810619
+## t2*   -10862139 -25642.33     2848247</code></pre>
+<pre class="r"><code>plot(boot.out7)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-24-1.png" width="672" />
+# Bootstrap 8</p>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ fact_Wh, data = data, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)     fact_Wh 
+## -1754697108  -132059648</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out8 &lt;- boot(prof_props, boot_func, 1001)
+boot.out8</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original    bias    std. error
+## t1* -1754697108  585141.9     8763772
+## t2*  -132059648 -220308.8     3193399</code></pre>
+<pre class="r"><code>plot(boot.out8)</code></pre>
+<p><img src="/post/2022-03-23-a01/A02_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+</div>
