@@ -7,14 +7,6 @@ categories: []
 tags: []
 ---
 
----
-title: A01
-author: Mia
-date: '2022-03-30'
-slug: a01
-categories: []
-tags: []
----
 # Prep
 ```{r}
 library(ISLR)

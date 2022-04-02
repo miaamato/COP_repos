@@ -9,7 +9,7 @@ tags: []
 ```{r}
 # excel file reading
 library(readxl)
-prof_props <- read_excel(file.choose())
+prof_props <- read_excel("C:\\Users\\amoam\\Downloads\\Professor_Proposes_Data.xlsx")
 prof_props
 ```
 ## Installing packages for linear regression
@@ -39,30 +39,40 @@ attach(prof_props)
 ## Attempt to transform descriptive data into metric
 ```{r}
 # Clarity
-# ordered_Clar <- sort(Clarity)
 fact <- factor(Clarity)
+levels(fact)
 fact_Clarity <- as.numeric(fact)
 fact_Clarity
 ```
 
 ```{r}
 # Symmetry
-# ordered_Symm <- sort(Symmetry)
+# relevel the factors to match the level of the variable
 fact1 <- factor(Symmetry)
+levels(fact1)
 fact_Symm <- as.numeric(fact1)
 fact_Symm
+```
+
+```{r}
 # Certification
-# ordered_Cert <- sort(Certification)
+# need to combine the levels into a single factor since there isn't a "better" certification
 fact2 <- factor(Certification)
-fact_Cert <- as.numeric(fact2)
-fact_Cert
+levels(fact2)
+levels(fact2) <- c(1, 1, 1 ,1, 1)
+factor(fact2)
+```
+
+```{r}
 # Polish
-# ordered_Pol <- sort(Polish)
 fact3 <- factor(Polish)
-fact_Pol <- as.numeric(fact3)
-fact_Pol
+levels(fact3) # There are two Vs? I have to change factor of the second V and X to 4 and 5 rather than 5 and 6
+levels(fact3) <- c(1, 2, 3 ,4, 4, 5)
+fact3
+```
+
+```{r}
 # Wholesaler
-# ordered_Wh <- sort(Wholesaler)
 fact4 <- factor(Wholesaler)
 fact_Wh <- as.numeric(fact4)
 fact_Wh
