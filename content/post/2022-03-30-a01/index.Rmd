@@ -16,10 +16,23 @@ library(boot)
 ```{r}
 set.seed(1)
 # Upload data frame
-real.estate <- read_excel(file.choose())
+real.estate <- read_excel("C:\\Users\\amoam\\Downloads\\real_estate (1).xlsx")
 real.estate
-# variables are renamed 
 ```
+```{r}
+# variables are renamed 
+names(real.estate)[2] <- "X1td"
+names(real.estate)[3] <- "X2ha"
+names(real.estate)[4] <- "X3dttnms"
+names(real.estate)[5] <- "X4nocs"
+names(real.estate)[6] <- "X5lat"
+names(real.estate)[7] <- "X6long"
+names(real.estate)[8] <- "Yhpoua"
+colnames(real.estate)
+summary(real.estate)
+```
+
+
 ```{r}
 train <- sample(414,207)
 head(train)
@@ -119,10 +132,121 @@ for (d in degree){
 cv.error.4
 ```
 ```{r}
+
+plot(degree, cv.error, type = "b")
+plot(cv.error.4, type = "b", col = "red")
+```
+# Kcross x5
+```{r}
+K = 10
+cv.error.5 <- rep(0, 5)
 degree <- 1:5
 for (d in degree){
-  plot(degree, cv.error, type = "b")
-  lines(cv.error.4, type = "b", col = "red")
+  glm.fit <- glm(Yhpoua~poly(X5lat, d), data = real.estate)
+  cv.error.5[d] <- cv.glm(real.estate, glm.fit, K = K)$delta[1]
 }
+cv.error.5
+```
+```{r}
+plot(degree, cv.error,type = "b")
+plot(degree, cv.error.5, type = "b", col = "red")
+# After cv.error.1, the graphs stopped showing the red line of the kcross (when using lines()) to the original cv.error so I've been plotting them separately
+```
+
+# Kcross x6
+```{r}
+K = 10
+cv.error.6 <- rep(0, 5)
+degree <- 1:5
+for (d in degree){
+  glm.fit <- glm(Yhpoua~poly(X6long, d), data = real.estate)
+  cv.error.6[d] <- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.6
+```
+```{r}
+plot(degree, cv.error,type = "b")
+plot(degree, cv.error.6, type = "b", col = "red")
+```
+# Bootstrap x1
+```{r}
+## Estimating Accuracy of a Linear Model
+boot.fn <- function(data, index){
+return(coef(lm(Yhpoua~X1td, data=data,subset=index)))
+}
+boot.fn(real.estate, 1:414)
+```
+```{r}
+set.seed(1)
+boot.fn(real.estate, sample(414, 414, replace = T))
+```
+```{r}
+boot.out <- boot(real.estate, boot.fn, 1000)
+plot(boot.out)
+```
+# Bootstrap x2
+```{r}
+boot.fn <- function(data, index){
+return(coef(lm(Yhpoua~X2ha, data=data,subset=index)))
+}
+boot.fn(real.estate, 1:414)
+set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))
+boot.out2 <- boot(real.estate, boot.fn, 1000)
+```
+```{r}
+plot(boot.out2)
+```
+# Bootstrap x3
+```{r}
+boot.fn <- function(data, index){
+return(coef(lm(Yhpoua~X3dttnms, data=data,subset=index)))
+}
+boot.fn(real.estate, 1:414)
+set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))
+boot.out3 <- boot(real.estate, boot.fn, 1000)
+```
+```{r}
+plot(boot.out3)
+```
+# Bootstrap x4
+```{r}
+boot.fn <- function(data, index){
+return(coef(lm(Yhpoua~X4nocs, data=data,subset=index)))
+}
+boot.fn(real.estate, 1:414)
+set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))
+boot.out4 <- boot(real.estate, boot.fn, 1000)
+```
+```{r}
+plot(boot.out4)
+```
+# Bootstrap x5
+```{r}
+boot.fn <- function(data, index){
+return(coef(lm(Yhpoua~X5lat, data=data,subset=index)))
+}
+boot.fn(real.estate, 1:414)
+set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))
+boot.out5 <- boot(real.estate, boot.fn, 1000)
+```
+```{r}
+plot(boot.out5)
+```
+# Bootstrap x6
+```{r}
+boot.fn <- function(data, index){
+return(coef(lm(Yhpoua~X6long, data=data,subset=index)))
+}
+boot.fn(real.estate, 1:414)
+set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))
+boot.out6 <- boot(real.estate, boot.fn, 1000)
+```
+```{r}
+plot(boot.out6)
 ```
 
