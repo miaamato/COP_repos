@@ -1,0 +1,289 @@
+---
+title: A01
+author: Mia
+date: '2022-03-30'
+slug: a01
+categories: []
+tags: []
+---
+
+
+
+<div id="prep" class="section level1">
+<h1>Prep</h1>
+<pre class="r"><code>library(ISLR)</code></pre>
+<pre><code>## Warning: package &#39;ISLR&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>library(readxl)</code></pre>
+<pre><code>## Warning: package &#39;readxl&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>library(boot)</code></pre>
+<div id="linear-mod" class="section level2">
+<h2>Linear Mod</h2>
+<pre class="r"><code>set.seed(1)
+# Upload data frame
+real.estate &lt;- read_excel(&quot;C:\\Users\\amoam\\Downloads\\real_estate (1).xlsx&quot;)
+real.estate</code></pre>
+<pre><code>## # A tibble: 414 x 8
+##       No X1_transaction_date X2_house_age X3_distance_to_the_n~ X4_number_of_co~
+##    &lt;dbl&gt;               &lt;dbl&gt;        &lt;dbl&gt;                 &lt;dbl&gt;            &lt;dbl&gt;
+##  1     1               2013.         32                    84.9               10
+##  2     2               2013.         19.5                 307.                 9
+##  3     3               2014.         13.3                 562.                 5
+##  4     4               2014.         13.3                 562.                 5
+##  5     5               2013.          5                   391.                 5
+##  6     6               2013.          7.1                2175.                 3
+##  7     7               2013.         34.5                 623.                 7
+##  8     8               2013.         20.3                 288.                 6
+##  9     9               2014.         31.7                5512.                 1
+## 10    10               2013.         17.9                1783.                 3
+## # ... with 404 more rows, and 3 more variables: X5_latitude &lt;dbl&gt;,
+## #   X6_longitude &lt;dbl&gt;, Y_house_price_of_unit_area &lt;dbl&gt;</code></pre>
+<pre class="r"><code># variables are renamed 
+names(real.estate)[2] &lt;- &quot;X1td&quot;
+names(real.estate)[3] &lt;- &quot;X2ha&quot;
+names(real.estate)[4] &lt;- &quot;X3dttnms&quot;
+names(real.estate)[5] &lt;- &quot;X4nocs&quot;
+names(real.estate)[6] &lt;- &quot;X5lat&quot;
+names(real.estate)[7] &lt;- &quot;X6long&quot;
+names(real.estate)[8] &lt;- &quot;Yhpoua&quot;
+colnames(real.estate)</code></pre>
+<pre><code>## [1] &quot;No&quot;       &quot;X1td&quot;     &quot;X2ha&quot;     &quot;X3dttnms&quot; &quot;X4nocs&quot;   &quot;X5lat&quot;    &quot;X6long&quot;  
+## [8] &quot;Yhpoua&quot;</code></pre>
+<pre class="r"><code>summary(real.estate)</code></pre>
+<pre><code>##        No             X1td           X2ha           X3dttnms      
+##  Min.   :  1.0   Min.   :2013   Min.   : 0.000   Min.   :  23.38  
+##  1st Qu.:104.2   1st Qu.:2013   1st Qu.: 9.025   1st Qu.: 289.32  
+##  Median :207.5   Median :2013   Median :16.100   Median : 492.23  
+##  Mean   :207.5   Mean   :2013   Mean   :17.713   Mean   :1083.89  
+##  3rd Qu.:310.8   3rd Qu.:2013   3rd Qu.:28.150   3rd Qu.:1454.28  
+##  Max.   :414.0   Max.   :2014   Max.   :43.800   Max.   :6488.02  
+##      X4nocs           X5lat           X6long          Yhpoua      
+##  Min.   : 0.000   Min.   :24.93   Min.   :121.5   Min.   :  7.60  
+##  1st Qu.: 1.000   1st Qu.:24.96   1st Qu.:121.5   1st Qu.: 27.70  
+##  Median : 4.000   Median :24.97   Median :121.5   Median : 38.45  
+##  Mean   : 4.094   Mean   :24.97   Mean   :121.5   Mean   : 37.98  
+##  3rd Qu.: 6.000   3rd Qu.:24.98   3rd Qu.:121.5   3rd Qu.: 46.60  
+##  Max.   :10.000   Max.   :25.01   Max.   :121.6   Max.   :117.50</code></pre>
+<pre class="r"><code>train &lt;- sample(414,207)
+head(train)</code></pre>
+<pre><code>## [1] 324 167 129 299 270 187</code></pre>
+<pre class="r"><code>attach(real.estate)</code></pre>
+<pre class="r"><code>lm.fit &lt;- lm(Yhpoua ~ X1td, data = real.estate, subset = train)
+lm.fit</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Yhpoua ~ X1td, data = real.estate, subset = train)
+## 
+## Coefficients:
+## (Intercept)         X1td  
+##   -7232.660        3.612</code></pre>
+<pre class="r"><code># residual error
+mean((Yhpoua - predict(lm.fit, real.estate))[-train]^2)</code></pre>
+<pre><code>## [1] 153.8845</code></pre>
+</div>
+<div id="quadratic-function" class="section level2">
+<h2>Quadratic Function</h2>
+<pre class="r"><code>lm.fit.poly &lt;- lm(Yhpoua~poly(X1td,2), data = real.estate, subset = train)
+lm.fit.poly</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Yhpoua ~ poly(X1td, 2), data = real.estate, subset = train)
+## 
+## Coefficients:
+##    (Intercept)  poly(X1td, 2)1  poly(X1td, 2)2  
+##          38.38           19.65          -31.24</code></pre>
+<pre class="r"><code>glm.fit &lt;- glm(Yhpoua~X1td, data = real.estate)
+coef(glm.fit)</code></pre>
+<pre><code>##  (Intercept)         X1td 
+## -8464.259532     4.223354</code></pre>
+<pre class="r"><code>lm.fitt &lt;- lm(Yhpoua~X1td, data = real.estate)
+coef(lm.fitt)</code></pre>
+<pre><code>##  (Intercept)         X1td 
+## -8464.259532     4.223354</code></pre>
+<pre class="r"><code>cv.err &lt;- cv.glm(real.estate, glm.fit)
+cv.err$delta</code></pre>
+<pre><code>## [1] 185.0345 185.0323</code></pre>
+<pre class="r"><code>cv.error &lt;- rep(0,5)
+degree &lt;- 1:5
+for (d in degree){
+  glm.fit &lt;- glm(Yhpoua~poly(X1td, d), data = real.estate)
+  cv.error[d] &lt;- cv.glm(real.estate, glm.fit)$delta[1]
+}
+cv.error</code></pre>
+<pre><code>## [1] 185.0345 185.9211 185.4247 185.4965 185.7531</code></pre>
+<pre class="r"><code>plot(degree, cv.error, type = &#39;b&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
+<div id="kcross-x1" class="section level1">
+<h1>Kcross x1</h1>
+<pre class="r"><code>K = 10
+cv.error.1 &lt;- rep(0,5)
+degree &lt;- 1:5
+for (d in degree){
+  glm.fit &lt;- glm(Yhpoua~poly(X1td, d), data = real.estate)
+  cv.error.1[d] &lt;- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.1</code></pre>
+<pre><code>## [1] 185.1796 185.8235 185.2853 184.9710 186.3360</code></pre>
+<pre class="r"><code>plot(degree, cv.error, type = &quot;b&quot;)
+lines(degree, cv.error.1, type = &quot;b&quot;, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+# Kcross x2</p>
+<pre class="r"><code>K = 10
+cv.error.2 &lt;- rep(0, 5)
+degree &lt;- 1:5
+for (d in degree){
+  glm.fit &lt;- glm(Yhpoua~poly(X2ha, d), data = real.estate)
+  cv.error.2[d] &lt;- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.2</code></pre>
+<pre><code>## [1] 178.0587 149.2029 151.6197 149.4758 149.7204</code></pre>
+<pre class="r"><code>plot(degree, cv.error, type = &quot;b&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>plot(degree, cv.error.2, type = &quot;b&quot;, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-2.png" width="672" />
+# Kcross x3</p>
+<pre class="r"><code>K = 10
+cv.error.3 &lt;- rep(0, 5)
+degree &lt;- 1:5
+for (d in degree){
+  glm.fit &lt;- glm(Yhpoua~poly(X3dttnms, d), data = real.estate)
+  cv.error.3[d] &lt;- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.3</code></pre>
+<pre><code>## [1] 101.76620  89.39392  83.51218  81.09441  81.29651</code></pre>
+<pre class="r"><code>plot(degree, cv.error, type = &quot;b&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>plot(degree, cv.error.3, type = &quot;b&quot;, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<p>Kcross x4</p>
+<pre class="r"><code>K = 10
+cv.error.4 &lt;- rep(0, 5)
+degree &lt;- 1:5
+for (d in degree){
+  glm.fit &lt;- glm(Yhpoua~poly(X4nocs, d), data = real.estate)
+  cv.error.4[d] &lt;- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.4</code></pre>
+<pre><code>## [1] 125.1734 125.7203 125.4342 125.7773 124.9809</code></pre>
+<pre class="r"><code>plot(degree, cv.error, type = &quot;b&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre class="r"><code>plot(cv.error.4, type = &quot;b&quot;, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-2.png" width="672" />
+# Kcross x5</p>
+<pre class="r"><code>K = 10
+cv.error.5 &lt;- rep(0, 5)
+degree &lt;- 1:5
+for (d in degree){
+  glm.fit &lt;- glm(Yhpoua~poly(X5lat, d), data = real.estate)
+  cv.error.5[d] &lt;- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.5</code></pre>
+<pre><code>## [1] 131.3768 124.5136 133.2856 114.4549 121.9568</code></pre>
+<pre class="r"><code>plot(degree, cv.error,type = &quot;b&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code>plot(degree, cv.error.5, type = &quot;b&quot;, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
+<pre class="r"><code># After cv.error.1, the graphs stopped showing the red line of the kcross (when using lines()) to the original cv.error so I&#39;ve been plotting them separately</code></pre>
+</div>
+<div id="kcross-x6" class="section level1">
+<h1>Kcross x6</h1>
+<pre class="r"><code>K = 10
+cv.error.6 &lt;- rep(0, 5)
+degree &lt;- 1:5
+for (d in degree){
+  glm.fit &lt;- glm(Yhpoua~poly(X6long, d), data = real.estate)
+  cv.error.6[d] &lt;- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.6</code></pre>
+<pre><code>## [1] 135.6473 130.7773 110.0582 114.6974 108.5821</code></pre>
+<pre class="r"><code>plot(degree, cv.error,type = &quot;b&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre class="r"><code>plot(degree, cv.error.6, type = &quot;b&quot;, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-23-2.png" width="672" />
+# Bootstrap x1</p>
+<pre class="r"><code>## Estimating Accuracy of a Linear Model
+boot.fn &lt;- function(data, index){
+return(coef(lm(Yhpoua~X1td, data=data,subset=index)))
+}
+boot.fn(real.estate, 1:414)</code></pre>
+<pre><code>##  (Intercept)         X1td 
+## -8464.259532     4.223354</code></pre>
+<pre class="r"><code>set.seed(1)
+boot.fn(real.estate, sample(414, 414, replace = T))</code></pre>
+<pre><code>##   (Intercept)          X1td 
+## -15754.385176      7.845665</code></pre>
+<pre class="r"><code>boot.out &lt;- boot(real.estate, boot.fn, 1000)
+plot(boot.out)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-26-1.png" width="672" />
+# Bootstrap x2</p>
+<pre class="r"><code>boot.fn &lt;- function(data, index){
+return(coef(lm(Yhpoua~X2ha, data= real.estate,subset=index)))
+}
+boot.fn(real.estate, 1:414)</code></pre>
+<pre><code>## (Intercept)        X2ha 
+##  42.4346970  -0.2514884</code></pre>
+<pre class="r"><code>set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))</code></pre>
+<pre><code>## (Intercept)        X2ha 
+##  43.6702552  -0.2071505</code></pre>
+<pre class="r"><code>boot.out2 &lt;- boot(real.estate, boot.fn, 1000)</code></pre>
+<pre class="r"><code>plot(boot.out2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-28-1.png" width="672" />
+# Bootstrap x3</p>
+<pre class="r"><code>boot.fn &lt;- function(data, index){
+return(coef(lm(Yhpoua~X3dttnms, data=real.estate,subset=index)))
+}
+boot.fn(real.estate, 1:414)</code></pre>
+<pre><code>##  (Intercept)     X3dttnms 
+## 45.851427058 -0.007262052</code></pre>
+<pre class="r"><code>set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))</code></pre>
+<pre><code>## (Intercept)    X3dttnms 
+## 47.53654707 -0.00769632</code></pre>
+<pre class="r"><code>boot.out3 &lt;- boot(real.estate, boot.fn, 1000)</code></pre>
+<pre class="r"><code>plot(boot.out3)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-30-1.png" width="672" />
+# Bootstrap x4</p>
+<pre class="r"><code>boot.fn &lt;- function(data, index){
+return(coef(lm(Yhpoua~X4nocs, data=real.estate,subset=index)))
+}
+boot.fn(real.estate, 1:414)</code></pre>
+<pre><code>## (Intercept)      X4nocs 
+##   27.181105    2.637653</code></pre>
+<pre class="r"><code>set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))</code></pre>
+<pre><code>## (Intercept)      X4nocs 
+##   30.499966    2.287917</code></pre>
+<pre class="r"><code>boot.out4 &lt;- boot(real.estate, boot.fn, 1000)</code></pre>
+<pre class="r"><code>plot(boot.out4)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-32-1.png" width="672" />
+# Bootstrap x5</p>
+<pre class="r"><code>boot.fn &lt;- function(data, index){
+return(coef(lm(Yhpoua~X5lat, data=real.estate,subset=index)))
+}
+boot.fn(real.estate, 1:414)</code></pre>
+<pre><code>## (Intercept)       X5lat 
+## -14917.6781    598.9683</code></pre>
+<pre class="r"><code>set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))</code></pre>
+<pre><code>## (Intercept)       X5lat 
+## -15253.1927    612.4692</code></pre>
+<pre class="r"><code>boot.out5 &lt;- boot(real.estate, boot.fn, 1000)</code></pre>
+<pre class="r"><code>plot(boot.out5)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-34-1.png" width="672" />
+# Bootstrap x6</p>
+<pre class="r"><code>boot.fn &lt;- function(data, index){
+return(coef(lm(Yhpoua~X6long, data=real.estate,subset=index)))
+}
+boot.fn(real.estate, 1:414)</code></pre>
+<pre><code>## (Intercept)      X6long 
+## -56345.5686    463.9347</code></pre>
+<pre class="r"><code>set.seed(1)
+boot.fn(df, sample(414, 414, replace=T))</code></pre>
+<pre><code>## (Intercept)      X6long 
+## -61968.4972    510.2152</code></pre>
+<pre class="r"><code>boot.out6 &lt;- boot(real.estate, boot.fn, 1000)</code></pre>
+<pre class="r"><code>plot(boot.out6)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+</div>

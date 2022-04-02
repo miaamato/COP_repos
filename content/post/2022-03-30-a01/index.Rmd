@@ -187,7 +187,7 @@ plot(boot.out)
 # Bootstrap x2
 ```{r}
 boot.fn <- function(data, index){
-return(coef(lm(Yhpoua~X2ha, data=data,subset=index)))
+return(coef(lm(Yhpoua~X2ha, data= real.estate,subset=index)))
 }
 boot.fn(real.estate, 1:414)
 set.seed(1)
@@ -200,7 +200,7 @@ plot(boot.out2)
 # Bootstrap x3
 ```{r}
 boot.fn <- function(data, index){
-return(coef(lm(Yhpoua~X3dttnms, data=data,subset=index)))
+return(coef(lm(Yhpoua~X3dttnms, data=real.estate,subset=index)))
 }
 boot.fn(real.estate, 1:414)
 set.seed(1)
@@ -213,7 +213,7 @@ plot(boot.out3)
 # Bootstrap x4
 ```{r}
 boot.fn <- function(data, index){
-return(coef(lm(Yhpoua~X4nocs, data=data,subset=index)))
+return(coef(lm(Yhpoua~X4nocs, data=real.estate,subset=index)))
 }
 boot.fn(real.estate, 1:414)
 set.seed(1)
@@ -226,7 +226,7 @@ plot(boot.out4)
 # Bootstrap x5
 ```{r}
 boot.fn <- function(data, index){
-return(coef(lm(Yhpoua~X5lat, data=data,subset=index)))
+return(coef(lm(Yhpoua~X5lat, data=real.estate,subset=index)))
 }
 boot.fn(real.estate, 1:414)
 set.seed(1)
@@ -239,7 +239,7 @@ plot(boot.out5)
 # Bootstrap x6
 ```{r}
 boot.fn <- function(data, index){
-return(coef(lm(Yhpoua~X6long, data=data,subset=index)))
+return(coef(lm(Yhpoua~X6long, data=real.estate,subset=index)))
 }
 boot.fn(real.estate, 1:414)
 set.seed(1)
