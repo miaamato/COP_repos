@@ -1,0 +1,129 @@
+---
+title: posta01
+author: ''
+date: '2022-04-02'
+slug: posta01
+categories: []
+tags: []
+---
+
+# Prep
+```{r}
+library(ISLR)
+library(readxl)
+library(boot)
+```
+## Linear Mod
+```{r}
+set.seed(1)
+# Upload data frame
+real.estate <- read_excel(file.choose())
+real.estate
+# variables are renamed 
+```
+```{r}
+train <- sample(414,207)
+head(train)
+attach(real.estate)
+```
+```{r}
+lm.fit <- lm(Yhpoua ~ X1td, data = real.estate, subset = train)
+lm.fit
+```
+```{r}
+# residual error
+mean((Yhpoua - predict(lm.fit, real.estate))[-train]^2)
+```
+## Quadratic Function
+```{r}
+lm.fit.poly <- lm(Yhpoua~poly(X1td,2), data = real.estate, subset = train)
+lm.fit.poly
+```
+```{r}
+glm.fit <- glm(Yhpoua~X1td, data = real.estate)
+coef(glm.fit)
+lm.fitt <- lm(Yhpoua~X1td, data = real.estate)
+coef(lm.fitt)
+```
+```{r}
+cv.err <- cv.glm(real.estate, glm.fit)
+cv.err$delta
+```
+```{r}
+cv.error <- rep(0,5)
+degree <- 1:5
+for (d in degree){
+  glm.fit <- glm(Yhpoua~poly(X1td, d), data = real.estate)
+  cv.error[d] <- cv.glm(real.estate, glm.fit)$delta[1]
+}
+cv.error
+```
+```{r}
+plot(degree, cv.error, type = 'b')
+```
+
+# Kcross x1
+```{r}
+K = 10
+cv.error.1 <- rep(0,5)
+degree <- 1:5
+for (d in degree){
+  glm.fit <- glm(Yhpoua~poly(X1td, d), data = real.estate)
+  cv.error.1[d] <- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.1
+```
+```{r}
+plot(degree, cv.error, type = "b")
+lines(degree, cv.error.1, type = "b", col = "red")
+```
+# Kcross x2
+```{r}
+K = 10
+cv.error.2 <- rep(0, 5)
+degree <- 1:5
+for (d in degree){
+  glm.fit <- glm(Yhpoua~poly(X2ha, d), data = real.estate)
+  cv.error.2[d] <- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.2
+```
+```{r}
+plot(degree, cv.error, type = "b")
+plot(degree, cv.error.2, type = "b", col = "red")
+```
+# Kcross x3
+```{r}
+K = 10
+cv.error.3 <- rep(0, 5)
+degree <- 1:5
+for (d in degree){
+  glm.fit <- glm(Yhpoua~poly(X3dttnms, d), data = real.estate)
+  cv.error.3[d] <- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.3
+```
+```{r}
+plot(degree, cv.error, type = "b")
+plot(degree, cv.error.3, type = "b", col = "red")
+```
+
+Kcross x4
+```{r}
+K = 10
+cv.error.4 <- rep(0, 5)
+degree <- 1:5
+for (d in degree){
+  glm.fit <- glm(Yhpoua~poly(X4nocs, d), data = real.estate)
+  cv.error.4[d] <- cv.glm(real.estate, glm.fit, K = K)$delta[1]
+}
+cv.error.4
+```
+```{r}
+degree <- 1:5
+for (d in degree){
+  plot(degree, cv.error, type = "b")
+  lines(cv.error.4, type = "b", col = "red")
+}
+```
+

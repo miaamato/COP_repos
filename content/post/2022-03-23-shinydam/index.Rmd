@@ -1,8 +1,75 @@
 ---
-title: ShinyDAM
+title: Log graphs
 author: ''
-date: '2022-03-23'
-slug: shinydam
+date: '2022-03-28'
+slug: Log graphs
 categories: []
 tags: []
 ---
+# Installing
+```{r}
+install.packages(c("openintro", "tidymodels", "ggridges"))
+```
+```{r}
+install.packages(c("Rtools", "rlang"))
+```
+```{r}
+library(rlang)
+```
+
+
+```{r}
+library(openintro)
+library(tidyverse)
+library(tidymodels)
+library(ggridges)
+set.seed(1234)
+glimpse(email)
+```
+# Data Description
+>> 3921 emails w 21 variables  
+>> Spam or Not?  
+Predictors: # characters, email has "Re:" in subject, time sent, # of times "inherit" is said in the email
+
+```{r}
+# Length of email
+
+email %>%
+  ggplot(aes(x = num_char, y = spam, fill = spam, color = spam)) +
+  geom_density_ridges2(alpha = 0.5) +
+  labs(
+    x = "Num of characters",
+    y = "Spam",
+    title = "Spam vs Num of characters"
+  )
+```
+```{r}
+email %>%
+  group_by(spam) %>%
+  summarise(mean_num_char = mean(num_char))
+```
+```{r}
+# containing "Re:" in subject
+email %>%
+  ggplot(aes(x = re_subj, fill = spam)) + 
+  geom_bar(position = "fill") +
+  labs(
+    x = "Having a variation of 'Re' in the email subject",
+    y = NULL,
+    title = "Spam vs. Having a variation of 'Re' in the email subject")
+```
+Conclusions..
+>> Number of characters and if the email has "Re:" in the subject are predictors if an email is spam  
+* How do we model this so both are predictors?
+
+# Modeling
+```{r}
+# model for just num_char
+means <- email %>%
+  group_by(spam) %>%
+  summarise(mean_num_char = mean(num_char)) %>%
+  mutate(group = 1)
+
+means
+```
+
