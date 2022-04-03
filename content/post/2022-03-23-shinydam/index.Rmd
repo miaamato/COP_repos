@@ -11,9 +11,6 @@ tags: []
 install.packages(c("openintro", "tidymodels", "ggridges"))
 ```
 ```{r}
-install.packages(c("Rtools", "rlang"))
-```
-```{r}
 library(rlang)
 ```
 
@@ -48,6 +45,7 @@ email %>%
   group_by(spam) %>%
   summarise(mean_num_char = mean(num_char))
 ```
+
 ```{r}
 # containing "Re:" in subject
 email %>%

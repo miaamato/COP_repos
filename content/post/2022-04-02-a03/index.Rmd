@@ -1,0 +1,125 @@
+---
+title: A03
+author: ''
+date: '2022-04-02'
+slug: a03
+categories: []
+tags: []
+---
+# Installing
+```{r}
+install.packages(c("openintro", "tidymodels", "ggridges"))
+```
+## Prep
+```{r}
+library(openintro)
+library(tidyverse)
+library(tidymodels)
+library(ggridges)
+library(readxl)
+set.seed(1234)
+```
+## Data loading
+```{r}
+genderdf <- read.csv("C:\\Users\\amoam\\Downloads\\gender_submission.csv")
+train <- read.csv("C:\\Users\\amoam\\Downloads\\train.csv", stringsAsFactors = T)
+test <- read.csv("C:\\Users\\amoam\\Downloads\\test.csv", stringsAsFactors = T)
+```
+```{r}
+glimpse(genderdf)
+glimpse(train)
+glimpse(test)
+```
+
+```{r}
+head(train)
+```
+```{r}
+head(test)
+```
+# First pattern
+```{r}
+str(train)
+levels(train$Sex)
+levels(test$Sex)
+summary(train)
+# values for age
+train$Age[is.na(train$Age)] = mean(train$Age, na.rm = TRUE)
+test$Age[is.na(test$Age)] = mean(test$Age, na.rm = TRUE)
+```
+```{r}
+# df of the variables
+df1 = c("PassengerId","Name","Ticket","Embarked","Cabin")
+train = train[,!(names(train) %in% df1)]
+str(train)
+```
+```{r}
+# checking collinearity to strengthen statistic validity
+train$Sex = as.numeric(train$Sex)
+test$Sex = as.numeric(test$Sex)
+cor(train)
+```
+# Data Summary
+```{r}
+# Survival with Gender
+train_tib <-train %>% 
+      group_by(Sex, Survived) %>%
+      summarise(count = n()) %>%
+     mutate(percent = round(count/sum(count)*100))
+train_tib
+```
+```{r}
+ggplot(train_tib, aes(x = Sex, y = percent)) +
+  geom_col(aes(fill = Survived))
+```
+>> About 80% of males died
+>> About 25% of females died
+
+```{r}
+# Survival with Age
+ggplot(train, aes(Age))+ 
+  geom_histogram(bins = 25,fill = "yellow")
+```
+
+
+# Logistic Regression
+```{r}
+log1 = glm(Survived~., data = train, family = binomial)
+summary(log1)
+```
+# Log model 2
+```{r}
+log2 = glm(Survived ~ . - Parch, data = train, family = binomial)
+summary(log2)
+
+log3 = glm(Survived ~ . - Parch - Fare, data = train, family = binomial)
+summary(log3)
+```
+## Checking the model
+```{r}
+figure  = 549 / (549 + 342)
+
+train_reg = predict(log3, type = "response")
+table(train$Survived, train_reg >= 0.5)
+
+accuracy = (244 + 458) / nrow(train)
+sens = 244 / (244 + 98)
+spec = 458 / (458 + 91)
+
+cat("accuracy: ", accuracy, " > ", "baseline: ", figure)
+```
+# Attempt with test
+```{r}
+test_reg = predict(log3, type = "response", newdata = test)
+
+# where p < 0.05
+test$Survived = as.numeric(test_reg >= 0.5)
+table(test$Survived)
+
+predict1 = data.frame(test[c("PassengerId","Survived")])
+```
+
+
+
+
+
