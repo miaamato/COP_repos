@@ -6,10 +6,6 @@ slug: a03
 categories: []
 tags: []
 ---
-# Installing
-```{r}
-install.packages(c("openintro", "tidymodels", "ggridges"))
-```
 ## Prep
 ```{r}
 library(openintro)
