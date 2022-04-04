@@ -38,6 +38,90 @@ attach(prof_props)
 
 ## Attempt to transform descriptive data into metric
 ```{r}
+prof_props$Certification <- as.factor(Certification)
+prof_props$Clarity <- as.factor(Clarity)
+prof_props$Cut <- as.factor(Cut)
+prof_props$Symmetry <- as.factor(Symmetry)
+prof_props$Wholesaler <- as.factor(Wholesaler)
+prof_props$Polish <- as.factor(Polish)
+prof_props$Colour <- as.factor(Colour)
+prof_props
+```
+
+# Frequency Distribution
+### Certification
+```{r}
+count(prof_props, Certification)
+```
+```{r}
+ggplot(prof_props, aes(x = Certification, fill = Certification)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+### Clarity
+```{r}
+count(prof_props, Clarity)
+```
+```{r}
+ggplot(prof_props, aes(x = Clarity, fill = Clarity)) +
+  geom_histogram(binwidth = 20, stat = "count")+
+  scale_fill_hue(c=45, l=80)
+```
+
+### Cut
+```{r}
+count(prof_props, Cut)
+```
+```{r}
+ggplot(prof_props, aes(x = Cut, fill = Cut)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+
+### Symmetry
+```{r}
+count(prof_props, Symmetry)
+```
+```{r}
+ggplot(prof_props, aes(x = Symmetry, fill = Symmetry)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+### Wholesaler
+>>> Won't have impact on quality of diamond  
+
+```{r}
+count(prof_props, Wholesaler)
+```
+
+```{r}
+ggplot(prof_props, aes(x = Wholesaler, fill = Wholesaler)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+
+### Polish
+```{r}
+count(prof_props, Polish)
+```
+```{r}
+ggplot(prof_props, aes(x = Polish, fill = Polish)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+
+### Colour
+```{r}
+count(prof_props, Colour)
+```
+```{r}
+ggplot(prof_props, aes(x = Colour, fill = Colour)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+
+
+```{r}
 # Clarity
 fact <- factor(Clarity)
 levels(fact)
