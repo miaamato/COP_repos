@@ -8,9 +8,9 @@ tags: []
 ---
 
 ```{r}
-# excel file reading
+# Opening CSV file reading
 library(readxl)
-prof_props <- read_excel("C:\\Users\\amoam\\Downloads\\Professor_Proposes_Data.xlsx")
+prof_props <- read.csv("https://raw.githubusercontent.com/miaamato/Data/main/profprop.csv")
 prof_props
 ```
 ## Loading/Opening packages for linear regression
@@ -33,7 +33,10 @@ attach(prof_props)
 ```
 
 ## Attempt to transform descriptive data into metric
+>> Also removed last row because of the NA value and had to make Price into double  
+
 ```{r}
+# prof_props
 prof_props$Certification <- as.factor(Certification)
 prof_props$Clarity <- as.factor(Clarity)
 prof_props$Cut <- as.factor(Cut)
@@ -41,7 +44,10 @@ prof_props$Symmetry <- as.factor(Symmetry)
 prof_props$Wholesaler <- as.factor(Wholesaler)
 prof_props$Polish <- as.factor(Polish)
 prof_props$Colour <- as.factor(Colour)
-prof_props
+prof_props$Price <- as.factor(Price)
+prof_props$Price <- as.numeric(gsub('[$,]', '', prof_props$Price))
+prof_props <- na.omit(prof_props)
+glimpse(prof_props)
 ```
 
 # Frequency Distribution
@@ -54,7 +60,7 @@ ggplot(prof_props, aes(x = Certification, fill = Certification)) +
   geom_histogram(binwidth = 20, stat = "count") +
   scale_fill_hue(c=45, l=80)
 ```
-### Clarity
+### Clarity  
 ```{r}
 count(prof_props, Clarity)
 ```
@@ -83,8 +89,8 @@ ggplot(prof_props, aes(x = Symmetry, fill = Symmetry)) +
   geom_histogram(binwidth = 20, stat = "count") +
   scale_fill_hue(c=45, l=80)
 ```
-### Wholesaler
->>> Won't have impact on quality of diamond  
+### Wholesaler  
+* Won't have impact on quality of diamond  
 
 ```{r}
 count(prof_props, Wholesaler)
@@ -115,8 +121,8 @@ ggplot(prof_props, aes(x = Colour, fill = Colour)) +
   geom_histogram(binwidth = 20, stat = "count") +
   scale_fill_hue(c=45, l=80)
 ```
-### Carat
->>> Already numeric  
+### Carat  
+* Already numeric  
 
 ```{r}
 ggplot(prof_props, aes(x = Carat, fill = Carat)) +
@@ -126,9 +132,12 @@ ggplot(prof_props, aes(x = Carat, fill = Carat)) +
 ```{r}
 count(prof_props, Carat)
 ```
+Analysis: The model produced from the given frequency analysis will allow each category of each variable to be modeled but wholesaler is considered insignificant as price doesn't vary depending on it.
+
 # Linear Model Fitting
+
 ```{r}
-lm.fit <- lm(as.numeric(as.factor(Price))~Carat + Colour + Cut + Clarity + Certification + Symmetry + Polish , data = prof_props)
+lm.fit <- lm(Price~Carat + Colour + Cut + Clarity + Certification + Symmetry + Polish , data = prof_props)
 summary(lm.fit)
 # Price had to be converted to numeric for summary() to function
 ```
@@ -147,6 +156,10 @@ perfect$Symmetry <- as.factor(perfect$Symmetry)
 perfect$Certification <- as.factor(perfect$Certification)
 perfect
 ```
+
+## Possible predicted value of the ring based on the given criteria
+>> The lm.fit model produced this price of the diamond he desired     
+
 ```{r}
 predict(lm.fit, perfect)
 ```
@@ -154,10 +167,8 @@ predict(lm.fit, perfect)
 # Bootstrap Val 1
 ```{r}
 boot.func <- function(data, index){
-return(coef(lm(Price ~ Carat , data = prof_props, subset=index)))
+return(coef(lm(Price ~ Carat , data = prof_props, subset = index)))
 }
-# subset=index
-# +Cut + Certification + Polish + Symmetry+Wholesaler + Colour + Clarity
 set.seed(1)
 boot.func(prof_props, 1:440)
 boot.func(prof_props, sample(440, 440, replace=T))

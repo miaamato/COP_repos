@@ -16,7 +16,7 @@ library(boot)
 ```{r}
 set.seed(1)
 # Upload data frame
-real.estate <- read_excel("C:\\Users\\amoam\\Downloads\\real_estate (1).xlsx")
+real.estate <- read.csv("https://raw.githubusercontent.com/miaamato/Data/main/real_estate%20(1).csv")
 real.estate
 ```
 ```{r}
