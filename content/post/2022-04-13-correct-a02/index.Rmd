@@ -1,0 +1,280 @@
+---
+title: correct A02
+author: Mia
+date: '2022-04-13'
+slug: correct-a02
+categories: []
+tags: []
+---
+
+```{r}
+# excel file reading
+library(readxl)
+prof_props <- read_excel("C:\\Users\\amoam\\Downloads\\Professor_Proposes_Data.xlsx")
+prof_props
+```
+## Loading/Opening packages for linear regression
+```{r}
+library(boot)
+# install.packages('ISLR')
+library(ggplot2)
+library(ISLR)
+library(dplyr)
+```
+
+```{r}
+glimpse(prof_props)
+
+```
+
+### Prep
+```{r}
+attach(prof_props)
+```
+
+## Attempt to transform descriptive data into metric
+```{r}
+prof_props$Certification <- as.factor(Certification)
+prof_props$Clarity <- as.factor(Clarity)
+prof_props$Cut <- as.factor(Cut)
+prof_props$Symmetry <- as.factor(Symmetry)
+prof_props$Wholesaler <- as.factor(Wholesaler)
+prof_props$Polish <- as.factor(Polish)
+prof_props$Colour <- as.factor(Colour)
+prof_props
+```
+
+# Frequency Distribution
+### Certification
+```{r}
+count(prof_props, Certification)
+```
+```{r}
+ggplot(prof_props, aes(x = Certification, fill = Certification)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+### Clarity
+```{r}
+count(prof_props, Clarity)
+```
+```{r}
+ggplot(prof_props, aes(x = Clarity, fill = Clarity)) +
+  geom_histogram(binwidth = 20, stat = "count")+
+  scale_fill_hue(c=45, l=80)
+```
+
+### Cut
+```{r}
+count(prof_props, Cut)
+```
+```{r}
+ggplot(prof_props, aes(x = Cut, fill = Cut)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+
+### Symmetry
+```{r}
+count(prof_props, Symmetry)
+```
+```{r}
+ggplot(prof_props, aes(x = Symmetry, fill = Symmetry)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+### Wholesaler
+>>> Won't have impact on quality of diamond  
+
+```{r}
+count(prof_props, Wholesaler)
+```
+
+```{r}
+ggplot(prof_props, aes(x = Wholesaler, fill = Wholesaler)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+
+### Polish
+```{r}
+count(prof_props, Polish)
+```
+```{r}
+ggplot(prof_props, aes(x = Polish, fill = Polish)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+
+### Colour
+```{r}
+count(prof_props, Colour)
+```
+```{r}
+ggplot(prof_props, aes(x = Colour, fill = Colour)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+### Carat
+>>> Already numeric  
+
+```{r}
+ggplot(prof_props, aes(x = Carat, fill = Carat)) +
+  geom_histogram(binwidth = 20, stat = "count") +
+  scale_fill_hue(c=45, l=80)
+```
+```{r}
+count(prof_props, Carat)
+```
+# Linear Model Fitting
+```{r}
+lm.fit <- lm(as.numeric(as.factor(Price))~Carat + Colour + Cut + Clarity + Certification + Symmetry + Polish , data = prof_props)
+summary(lm.fit)
+# Price had to be converted to numeric for summary() to function
+```
+# Using model to predict the professor's diamond
+```{r}
+perfect <- data.frame(Carat =  0.9,Cut = "V", Colour = "J", Clarity = "SI2", Polish = "G", Symmetry = "V", Certification = "GIA")
+perfect
+```
+
+```{r}
+perfect$Cut <- as.factor(perfect$Cut)
+perfect$Colour <- as.factor(perfect$Colour)
+perfect$Clarity <- as.factor(perfect$Clarity)
+perfect$Polish <- as.factor(perfect$Polish)
+perfect$Symmetry <- as.factor(perfect$Symmetry)
+perfect$Certification <- as.factor(perfect$Certification)
+perfect
+```
+```{r}
+predict(lm.fit, perfect)
+```
+
+# Bootstrap Val 1
+```{r}
+boot.func <- function(data, index){
+return(coef(lm(Price ~ Carat , data = prof_props, subset=index)))
+}
+# subset=index
+# +Cut + Certification + Polish + Symmetry+Wholesaler + Colour + Clarity
+set.seed(1)
+boot.func(prof_props, 1:440)
+boot.func(prof_props, sample(440, 440, replace=T))
+boot.out <- boot(prof_props, boot.func, 1000)
+```
+```{r}
+plot(boot.out)
+```
+
+# Bootstrap Val 2
+```{r}
+boot.func <- function(data, index){
+return(coef(lm(Price ~ Certification , data = prof_props)))
+}
+set.seed(1)
+boot.func(prof_props, 1:440)
+boot.func(prof_props, sample(440, 440, replace=T))
+boot.out2 <- boot(prof_props, boot.func, 1000)
+```
+```{r}
+boot.out2
+```
+# Bootstrap Val 3
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Colour, data = prof_props, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out3 <- boot(prof_props, boot_func, 1001)
+```
+```{r}
+plot(boot.out3)
+```
+# Bootstrap Val 4
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Symmetry, data = prof_props,))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out4 <- boot(prof_props, boot_func, 1001)
+boot.out4
+```
+
+# Bootstrap Val 5
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Clarity, data = data))
+}
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out5 <- boot(prof_props, boot_func, 1001)
+boot.out5
+```
+
+# Bootstrap Val 6
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Cut, data = data))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out66 <- boot(prof_props, boot_func, 1001)
+boot.out66
+```
+>>> with subset  
+
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Cut, data = data, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out6 <- boot(prof_props, boot_func, 1001)
+boot.out6
+```
+
+```{r}
+plot(boot.out6)
+```
+
+# Bootstrp 7
+
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Wholesaler, data = data))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out88 <- boot(prof_props, boot_func, 1001)
+boot.out88
+```
+>> with subset  
+
+```{r}
+boot_func <- function(data, index) {
+  fit <- coef(lm(Price ~ Wholesaler, data = data, subset = index))
+}
+int <- boot_func(prof_props, 1:440)
+int
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out8 <- boot(prof_props, boot_func, 1001)
+boot.out8
+```
+```{r}
+plot(boot.out8)
+```
+

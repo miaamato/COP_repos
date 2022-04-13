@@ -1,0 +1,563 @@
+---
+title: correct A02
+author: Mia
+date: '2022-04-13'
+slug: correct-a02
+categories: []
+tags: []
+---
+
+
+
+<pre class="r"><code># excel file reading
+library(readxl)</code></pre>
+<pre><code>## Warning: package &#39;readxl&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>prof_props &lt;- read_excel(&quot;C:\\Users\\amoam\\Downloads\\Professor_Proposes_Data.xlsx&quot;)
+prof_props</code></pre>
+<pre><code>## # A tibble: 440 x 9
+##    Carat Colour Clarity Cut   Certification Polish Symmetry Price              
+##    &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;    &lt;dttm&gt;             
+##  1  0.92 I      SI2     G     AGS           V      V        1908-03-18 00:00:00
+##  2  0.92 I      SI2     V     AGS           G      G        1908-03-18 00:00:00
+##  3  0.82 F      SI2     I     GIA           X      X        1908-03-22 00:00:00
+##  4  0.81 G      SI1     I     GIA           X      V        1908-03-22 00:00:00
+##  5  0.9  J      VS2     V     GIA           V      V        1908-03-24 00:00:00
+##  6  0.87 F      SI2     I     AGS           G      V        1908-03-25 00:00:00
+##  7  0.8  D      SI2     I     GIA           V      V        1908-03-26 00:00:00
+##  8  0.84 F      SI1     G     GIA           V      V        1908-03-28 00:00:00
+##  9  0.8  D      SI2     V     GIA           V      V        1908-03-30 00:00:00
+## 10  0.8  D      SI2     V     GIA           V      X        1908-03-30 00:00:00
+## # ... with 430 more rows, and 1 more variable: Wholesaler &lt;dbl&gt;</code></pre>
+<div id="loadingopening-packages-for-linear-regression" class="section level2">
+<h2>Loading/Opening packages for linear regression</h2>
+<pre class="r"><code>library(boot)
+# install.packages(&#39;ISLR&#39;)
+library(ggplot2)
+library(ISLR)</code></pre>
+<pre><code>## Warning: package &#39;ISLR&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>glimpse(prof_props)</code></pre>
+<pre><code>## Rows: 440
+## Columns: 9
+## $ Carat         &lt;dbl&gt; 0.92, 0.92, 0.82, 0.81, 0.90, 0.87, 0.80, 0.84, 0.80, 0.~
+## $ Colour        &lt;chr&gt; &quot;I&quot;, &quot;I&quot;, &quot;F&quot;, &quot;G&quot;, &quot;J&quot;, &quot;F&quot;, &quot;D&quot;, &quot;F&quot;, &quot;D&quot;, &quot;D&quot;, &quot;G&quot;, &quot;~
+## $ Clarity       &lt;chr&gt; &quot;SI2&quot;, &quot;SI2&quot;, &quot;SI2&quot;, &quot;SI1&quot;, &quot;VS2&quot;, &quot;SI2&quot;, &quot;SI2&quot;, &quot;SI1&quot;, ~
+## $ Cut           &lt;chr&gt; &quot;G&quot;, &quot;V&quot;, &quot;I&quot;, &quot;I&quot;, &quot;V&quot;, &quot;I&quot;, &quot;I&quot;, &quot;G&quot;, &quot;V&quot;, &quot;V&quot;, &quot;I&quot;, &quot;~
+## $ Certification &lt;chr&gt; &quot;AGS&quot;, &quot;AGS&quot;, &quot;GIA&quot;, &quot;GIA&quot;, &quot;GIA&quot;, &quot;AGS&quot;, &quot;GIA&quot;, &quot;GIA&quot;, ~
+## $ Polish        &lt;chr&gt; &quot;V&quot;, &quot;G&quot;, &quot;X&quot;, &quot;X&quot;, &quot;V&quot;, &quot;G&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;~
+## $ Symmetry      &lt;chr&gt; &quot;V&quot;, &quot;G&quot;, &quot;X&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;V&quot;, &quot;X&quot;, &quot;V&quot;, &quot;~
+## $ Price         &lt;dttm&gt; 1908-03-18, 1908-03-18, 1908-03-22, 1908-03-22, 1908-03~
+## $ Wholesaler    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,~</code></pre>
+<div id="prep" class="section level3">
+<h3>Prep</h3>
+<pre class="r"><code>attach(prof_props)</code></pre>
+</div>
+</div>
+<div id="attempt-to-transform-descriptive-data-into-metric" class="section level2">
+<h2>Attempt to transform descriptive data into metric</h2>
+<pre class="r"><code>prof_props$Certification &lt;- as.factor(Certification)
+prof_props$Clarity &lt;- as.factor(Clarity)
+prof_props$Cut &lt;- as.factor(Cut)
+prof_props$Symmetry &lt;- as.factor(Symmetry)
+prof_props$Wholesaler &lt;- as.factor(Wholesaler)
+prof_props$Polish &lt;- as.factor(Polish)
+prof_props$Colour &lt;- as.factor(Colour)
+prof_props</code></pre>
+<pre><code>## # A tibble: 440 x 9
+##    Carat Colour Clarity Cut   Certification Polish Symmetry Price              
+##    &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;         &lt;fct&gt;  &lt;fct&gt;    &lt;dttm&gt;             
+##  1  0.92 I      SI2     G     AGS           V      V        1908-03-18 00:00:00
+##  2  0.92 I      SI2     V     AGS           G      G        1908-03-18 00:00:00
+##  3  0.82 F      SI2     I     GIA           X      X        1908-03-22 00:00:00
+##  4  0.81 G      SI1     I     GIA           X      V        1908-03-22 00:00:00
+##  5  0.9  J      VS2     V     GIA           V      V        1908-03-24 00:00:00
+##  6  0.87 F      SI2     I     AGS           G      V        1908-03-25 00:00:00
+##  7  0.8  D      SI2     I     GIA           V      V        1908-03-26 00:00:00
+##  8  0.84 F      SI1     G     GIA           V      V        1908-03-28 00:00:00
+##  9  0.8  D      SI2     V     GIA           V      V        1908-03-30 00:00:00
+## 10  0.8  D      SI2     V     GIA           V      X        1908-03-30 00:00:00
+## # ... with 430 more rows, and 1 more variable: Wholesaler &lt;fct&gt;</code></pre>
+</div>
+<div id="frequency-distribution" class="section level1">
+<h1>Frequency Distribution</h1>
+<div id="certification" class="section level3">
+<h3>Certification</h3>
+<pre class="r"><code>count(prof_props, Certification)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   Certification     n
+##   &lt;fct&gt;         &lt;int&gt;
+## 1 AGS              12
+## 2 DOW               1
+## 3 EGL             119
+## 4 GIA             265
+## 5 IGI              43</code></pre>
+<pre class="r"><code>ggplot(prof_props, aes(x = Certification, fill = Certification)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;) +
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+### Clarity</p>
+<pre class="r"><code>count(prof_props, Clarity)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##   Clarity     n
+##   &lt;fct&gt;   &lt;int&gt;
+## 1 I1         82
+## 2 I2         28
+## 3 SI1       116
+## 4 SI2       110
+## 5 SI3        26
+## 6 VS1        30
+## 7 VS2        41
+## 8 VVS1        2
+## 9 VVS2        5</code></pre>
+<pre class="r"><code>ggplot(prof_props, aes(x = Clarity, fill = Clarity)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;)+
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="cut" class="section level3">
+<h3>Cut</h3>
+<pre class="r"><code>count(prof_props, Cut)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   Cut       n
+##   &lt;fct&gt; &lt;int&gt;
+## 1 F        59
+## 2 G        49
+## 3 I        86
+## 4 V        97
+## 5 X       149</code></pre>
+<pre class="r"><code>ggplot(prof_props, aes(x = Cut, fill = Cut)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;) +
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="symmetry" class="section level3">
+<h3>Symmetry</h3>
+<pre class="r"><code>count(prof_props, Symmetry)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   Symmetry     n
+##   &lt;fct&gt;    &lt;int&gt;
+## 1 F           21
+## 2 G          157
+## 3 I            5
+## 4 V          206
+## 5 X           51</code></pre>
+<pre class="r"><code>ggplot(prof_props, aes(x = Symmetry, fill = Symmetry)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;) +
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+### Wholesaler
+&gt;&gt;&gt; Won’t have impact on quality of diamond</p>
+<pre class="r"><code>count(prof_props, Wholesaler)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   Wholesaler     n
+##   &lt;fct&gt;      &lt;int&gt;
+## 1 1             60
+## 2 2            180
+## 3 3            200</code></pre>
+<pre class="r"><code>ggplot(prof_props, aes(x = Wholesaler, fill = Wholesaler)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;) +
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="polish" class="section level3">
+<h3>Polish</h3>
+<pre class="r"><code>count(prof_props, Polish)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Polish     n
+##   &lt;fct&gt;  &lt;int&gt;
+## 1 F          5
+## 2 G        165
+## 3 I          5
+## 4 v          1
+## 5 V        203
+## 6 X         61</code></pre>
+<pre class="r"><code>ggplot(prof_props, aes(x = Polish, fill = Polish)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;) +
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+<div id="colour" class="section level3">
+<h3>Colour</h3>
+<pre class="r"><code>count(prof_props, Colour)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##   Colour     n
+##   &lt;fct&gt;  &lt;int&gt;
+## 1 D         20
+## 2 E         54
+## 3 F         58
+## 4 G         43
+## 5 H         71
+## 6 I         79
+## 7 J         72
+## 8 K         31
+## 9 L         12</code></pre>
+<pre class="r"><code>ggplot(prof_props, aes(x = Colour, fill = Colour)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;) +
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" />
+### Carat
+&gt;&gt;&gt; Already numeric</p>
+<pre class="r"><code>ggplot(prof_props, aes(x = Carat, fill = Carat)) +
+  geom_histogram(binwidth = 20, stat = &quot;count&quot;) +
+  scale_fill_hue(c=45, l=80)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre class="r"><code>count(prof_props, Carat)</code></pre>
+<pre><code>## # A tibble: 50 x 2
+##    Carat     n
+##    &lt;dbl&gt; &lt;int&gt;
+##  1  0.09     5
+##  2  0.1     13
+##  3  0.11     5
+##  4  0.2      1
+##  5  0.21     7
+##  6  0.22     5
+##  7  0.23     7
+##  8  0.27     1
+##  9  0.28     2
+## 10  0.3    154
+## # ... with 40 more rows</code></pre>
+</div>
+</div>
+<div id="linear-model-fitting" class="section level1">
+<h1>Linear Model Fitting</h1>
+<pre class="r"><code>lm.fit &lt;- lm(as.numeric(as.factor(Price))~Carat + Colour + Cut + Clarity + Certification + Symmetry + Polish , data = prof_props)
+summary(lm.fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = as.numeric(as.factor(Price)) ~ Carat + Colour + 
+##     Cut + Clarity + Certification + Symmetry + Polish, data = prof_props)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -60.656 -10.975  -0.792   7.112  71.442 
+## 
+## Coefficients: (1 not defined because of singularities)
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      -151.121     16.942  -8.920  &lt; 2e-16 ***
+## Carat             249.150      5.925  42.054  &lt; 2e-16 ***
+## ColourE           -20.118      6.183  -3.254  0.00123 ** 
+## ColourF           -31.694      6.193  -5.117 4.79e-07 ***
+## ColourG           -26.368      6.296  -4.188 3.45e-05 ***
+## ColourH           -34.309      6.128  -5.599 3.99e-08 ***
+## ColourI           -38.467      6.131  -6.275 9.00e-10 ***
+## ColourJ           -47.320      6.311  -7.498 4.11e-13 ***
+## ColourK           -80.627      7.048 -11.440  &lt; 2e-16 ***
+## ColourL          -108.343      8.818 -12.287  &lt; 2e-16 ***
+## CutG                8.798      4.837   1.819  0.06968 .  
+## CutI               11.629      4.726   2.460  0.01429 *  
+## CutV                9.621      4.800   2.004  0.04572 *  
+## CutX               16.334      4.124   3.961 8.82e-05 ***
+## ClarityI2         -71.123      5.867 -12.122  &lt; 2e-16 ***
+## ClaritySI1         75.583      4.995  15.133  &lt; 2e-16 ***
+## ClaritySI2         67.490      4.113  16.408  &lt; 2e-16 ***
+## ClaritySI3         33.580      5.684   5.908 7.32e-09 ***
+## ClarityVS1         86.869      6.818  12.741  &lt; 2e-16 ***
+## ClarityVS2         80.599      6.155  13.095  &lt; 2e-16 ***
+## ClarityVVS1       118.342     17.869   6.623 1.12e-10 ***
+## ClarityVVS2        76.405     11.673   6.545 1.79e-10 ***
+## CertificationDOW  -11.465     25.815  -0.444  0.65718    
+## CertificationEGL   -9.508      9.461  -1.005  0.31555    
+## CertificationGIA   18.730      9.318   2.010  0.04507 *  
+## CertificationIGI   27.498     10.953   2.511  0.01244 *  
+## SymmetryG          16.427      6.629   2.478  0.01361 *  
+## SymmetryI          38.165     18.114   2.107  0.03573 *  
+## SymmetryV          19.032      7.073   2.691  0.00742 ** 
+## SymmetryX          16.404      7.895   2.078  0.03837 *  
+## PolishG             7.021     12.329   0.569  0.56934    
+## PolishI                NA         NA      NA       NA    
+## Polishv            18.933     26.656   0.710  0.47795    
+## PolishV             7.441     12.779   0.582  0.56070    
+## PolishX             8.921     13.135   0.679  0.49738    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 22.78 on 406 degrees of freedom
+## Multiple R-squared:  0.8847, Adjusted R-squared:  0.8754 
+## F-statistic: 94.43 on 33 and 406 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code># Price had to be converted to numeric for summary() to function</code></pre>
+</div>
+<div id="using-model-to-predict-the-professors-diamond" class="section level1">
+<h1>Using model to predict the professor’s diamond</h1>
+<pre class="r"><code>perfect &lt;- data.frame(Carat =  0.9,Cut = &quot;V&quot;, Colour = &quot;J&quot;, Clarity = &quot;SI2&quot;, Polish = &quot;G&quot;, Symmetry = &quot;V&quot;, Certification = &quot;GIA&quot;)
+perfect</code></pre>
+<pre><code>##   Carat Cut Colour Clarity Polish Symmetry Certification
+## 1   0.9   V      J     SI2      G        V           GIA</code></pre>
+<pre class="r"><code>perfect$Cut &lt;- as.factor(perfect$Cut)
+perfect$Colour &lt;- as.factor(perfect$Colour)
+perfect$Clarity &lt;- as.factor(perfect$Clarity)
+perfect$Polish &lt;- as.factor(perfect$Polish)
+perfect$Symmetry &lt;- as.factor(perfect$Symmetry)
+perfect$Certification &lt;- as.factor(perfect$Certification)
+perfect</code></pre>
+<pre><code>##   Carat Cut Colour Clarity Polish Symmetry Certification
+## 1   0.9   V      J     SI2      G        V           GIA</code></pre>
+<pre class="r"><code>predict(lm.fit, perfect)</code></pre>
+<pre><code>## Warning in predict.lm(lm.fit, perfect): prediction from a rank-deficient fit may
+## be misleading</code></pre>
+<pre><code>##        1 
+## 147.6881</code></pre>
+</div>
+<div id="bootstrap-val-1" class="section level1">
+<h1>Bootstrap Val 1</h1>
+<pre class="r"><code>boot.func &lt;- function(data, index){
+return(coef(lm(Price ~ Carat , data = prof_props, subset=index)))
+}
+# subset=index
+# +Cut + Certification + Polish + Symmetry+Wholesaler + Colour + Clarity
+set.seed(1)
+boot.func(prof_props, 1:440)</code></pre>
+<pre><code>## (Intercept)       Carat 
+## -2226483383   247512889</code></pre>
+<pre class="r"><code>boot.func(prof_props, sample(440, 440, replace=T))</code></pre>
+<pre><code>## (Intercept)       Carat 
+## -2229448128   251802080</code></pre>
+<pre class="r"><code>boot.out &lt;- boot(prof_props, boot.func, 1000)</code></pre>
+<pre class="r"><code>plot(boot.out)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+</div>
+<div id="bootstrap-val-2" class="section level1">
+<h1>Bootstrap Val 2</h1>
+<pre class="r"><code>boot.func &lt;- function(data, index){
+return(coef(lm(Price ~ Certification , data = prof_props)))
+}
+set.seed(1)
+boot.func(prof_props, 1:440)</code></pre>
+<pre><code>##      (Intercept) CertificationDOW CertificationEGL CertificationGIA 
+##      -1947074400        -86608800        -30722521       -135958850 
+## CertificationIGI 
+##       -239142977</code></pre>
+<pre class="r"><code>boot.func(prof_props, sample(440, 440, replace=T))</code></pre>
+<pre><code>##      (Intercept) CertificationDOW CertificationEGL CertificationGIA 
+##      -1947074400        -86608800        -30722521       -135958850 
+## CertificationIGI 
+##       -239142977</code></pre>
+<pre class="r"><code>boot.out2 &lt;- boot(prof_props, boot.func, 1000)</code></pre>
+<pre class="r"><code>boot.out2</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot.func, R = 1000)
+## 
+## 
+## Bootstrap Statistics :
+##        original  bias    std. error
+## t1* -1947074400       0           0
+## t2*   -86608800       0           0
+## t3*   -30722521       0           0
+## t4*  -135958850       0           0
+## t5*  -239142977       0           0</code></pre>
+</div>
+<div id="bootstrap-val-3" class="section level1">
+<h1>Bootstrap Val 3</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Colour, data = prof_props, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)     ColourE     ColourF     ColourG     ColourH     ColourI 
+## -2009041920   -66034880   -84875487   -12764294   -75506542   -66172338 
+##     ColourJ     ColourK     ColourL 
+##   -46248480     3633817     4518720</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out3 &lt;- boot(prof_props, boot_func, 1001)</code></pre>
+<pre class="r"><code>plot(boot.out3)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-31-1.png" width="672" />
+# Bootstrap Val 4</p>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Symmetry, data = prof_props,))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)   SymmetryG   SymmetryI   SymmetryV   SymmetryX 
+## -1999012114   -46470464    53145874   -83528189   -58143086</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out4 &lt;- boot(prof_props, boot_func, 1001)
+boot.out4</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original  bias    std. error
+## t1* -1999012114       0           0
+## t2*   -46470464       0           0
+## t3*    53145874       0           0
+## t4*   -83528189       0           0
+## t5*   -58143086       0           0</code></pre>
+</div>
+<div id="bootstrap-val-5" class="section level1">
+<h1>Bootstrap Val 5</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Clarity, data = data))
+}
+set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out5 &lt;- boot(prof_props, boot_func, 1001)
+boot.out5</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original  bias    std. error
+## t1* -1989433756       0           0
+## t2*   -17385215       0           0
+## t3*  -129214161       0           0
+## t4*   -49156964       0           0
+## t5*     6586987       0           0
+## t6*  -121424804       0           0
+## t7*  -142987785       0           0
+## t8*  -172467044       0           0
+## t9*  -170980964       0           0</code></pre>
+</div>
+<div id="bootstrap-val-6" class="section level1">
+<h1>Bootstrap Val 6</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Cut, data = data))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)        CutG        CutI        CutV        CutX 
+## -1997030563   -35354874   -62506330  -110342930   -68878678</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out66 &lt;- boot(prof_props, boot_func, 1001)
+boot.out66</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original  bias    std. error
+## t1* -1997030563       0           0
+## t2*   -35354874       0           0
+## t3*   -62506330       0           0
+## t4*  -110342930       0           0
+## t5*   -68878678       0           0</code></pre>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>with subset</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Cut, data = data, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept)        CutG        CutI        CutV        CutX 
+## -1997030563   -35354874   -62506330  -110342930   -68878678</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out6 &lt;- boot(prof_props, boot_func, 1001)
+boot.out6</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original      bias    std. error
+## t1* -1997030563    40932.94     6757820
+## t2*   -35354874 -1081516.90    15792301
+## t3*   -62506330    87481.53    13428802
+## t4*  -110342930  -491270.22    11979575
+## t5*   -68878678    96674.08    10698337</code></pre>
+<pre class="r"><code>plot(boot.out6)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+</div>
+<div id="bootstrp-7" class="section level1">
+<h1>Bootstrp 7</h1>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Wholesaler, data = data))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept) Wholesaler2 Wholesaler3 
+## -1946230560   -32936640  -222487632</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out88 &lt;- boot(prof_props, boot_func, 1001)
+boot.out88</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original  bias    std. error
+## t1* -1946230560       0           0
+## t2*   -32936640       0           0
+## t3*  -222487632       0           0</code></pre>
+<blockquote>
+<blockquote>
+<p>with subset</p>
+</blockquote>
+</blockquote>
+<pre class="r"><code>boot_func &lt;- function(data, index) {
+  fit &lt;- coef(lm(Price ~ Wholesaler, data = data, subset = index))
+}
+int &lt;- boot_func(prof_props, 1:440)
+int</code></pre>
+<pre><code>## (Intercept) Wholesaler2 Wholesaler3 
+## -1946230560   -32936640  -222487632</code></pre>
+<pre class="r"><code>set.seed(1)
+boot_func(prof_props, sample(440,440, replace = T))
+boot.out8 &lt;- boot(prof_props, boot_func, 1001)
+boot.out8</code></pre>
+<pre><code>## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = prof_props, statistic = boot_func, R = 1001)
+## 
+## 
+## Bootstrap Statistics :
+##        original      bias    std. error
+## t1* -1946230560   -7877.739    302037.4
+## t2*   -32936640 -146545.290   2408150.2
+## t3*  -222487632  -39944.649    805407.4</code></pre>
+<pre class="r"><code>plot(boot.out8)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+</div>
