@@ -8,7 +8,7 @@ tags: []
 ---
 # Installing
 ```{r}
-install.packages(c("openintro", "tidymodels", "ggridges"))
+#install.packages(c("openintro", "tidymodels", "ggridges"))
 ```
 ```{r}
 library(rlang)
