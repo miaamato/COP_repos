@@ -9,6 +9,12 @@ tags: []
 
 
 
+<p>B1: K-fold cross validation vs Single Split Validation set approach<br />
+&gt;&gt; Both methods are cross validation methods used to avoid overfitting and underfitting the data. A single split validation set randomly splits the dataset into 2 sets, training and test set. The model is trained on the training set and then tested on the test/validation set to see if the model was accurate in predictions. The K-fold method differs in the way that the data can be split any (k) amount of times as long as the folds are about even in size. One of the sets will be the test while the others are trained with the model. This process is repeated k amount of times until each fold is the test set. This is a disadvantage to the k method because of the amount of computing power that would be necessary to run k amount of rounds of training/testing in comparison to the single split validation approach.</p>
+<p>B2: K-fold cross validation vs. LOOCV<br />
+&gt;&gt; K-fold cross validation splits the data into multiple training sets and one test set each resampling of the data. This allows for the model to be trained on multiple sets and have one validation set. The LOOCV method is similar in the way that there is more training sets, however, there is no set for testing- rather it is one observation that is left out as a single test point. This can lead to high variance of the results since you are using almost all the data to guide the target value of a single validation point.</p>
+<p>C: Bootstrapping<br />
+&gt;&gt; Through the bootstrapping method, randomly sampled training sets are produced and used in the model. Because each sample is done with replacement, values can be doubled or omitted, and this promotes less variance in the results but also concludes that the model is solely based on the original sample’s values. This means that this is a nonparametric method of inferring data so no assumptions can be made about the population that the sample was taken from which could be considered disadvantageous because of this bias. However, if an explicit testing sample is unavailable, bootstrapping may be considered a preferred method especially if looking to quantify the uncertainty of a model.</p>
 <div id="prep" class="section level1">
 <h1>Prep</h1>
 <pre class="r"><code>library(ISLR)</code></pre>
