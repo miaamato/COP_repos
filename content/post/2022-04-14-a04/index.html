@@ -1,0 +1,117 @@
+---
+title: A04
+author: Mia
+date: '2022-04-14'
+slug: a04
+categories: []
+tags: []
+---
+
+
+
+<p><strong>Appended Graph Analysis</strong><br />
+The appended visualization shows a bias in the data by having different y-axis ranges for no mask and mask counties. It gives the impression that the cases of COVID-19 are within the same ranges between the mask counties and non mask counties. It’s only usefulness could come from being able to demonstrate the rate of cases over time. The graph is overall not effective since the peak of no mask counties is at about 10 units while on the mask county’s axis this translates to 21 units.</p>
+<div id="prep" class="section level2">
+<h2>Prep</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.6     v dplyr   1.0.8
+## v tidyr   1.2.0     v stringr 1.4.0
+## v readr   2.1.2     v forcats 0.5.1</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div id="data-frame-construction" class="section level2">
+<h2>Data Frame Construction</h2>
+<pre class="r"><code>masked &lt;- tribble(
+  ~ date , ~masked,
+  &quot;7/12/2020&quot;, 25.5,
+  &quot;7/13/2020&quot;, 19.8,
+  &quot;7/14/2020&quot;, 19.8,
+  &quot;7/15/2020&quot;, 20.5,
+  &quot;7/16/2020&quot;, 19.8,
+  &quot;7/17/2020&quot;, 19.8,
+  &quot;7/18/2020&quot;, 20.5,
+  &quot;7/19/2020&quot;, 19.9,
+  &quot;7/20/2020&quot;, 20.7,
+  &quot;7/21/2020&quot;, 21.2,
+  &quot;7/22/2020&quot;, 19.8,
+  &quot;7/23/2020&quot;, 19.8,
+  &quot;7/24/2020&quot;, 20.5,
+  &quot;7/25/2020&quot;, 19.0,
+  &quot;7/26/2020&quot;, 19.7,
+  &quot;7/27/2020&quot;, 17.0,
+  &quot;7/28/2020&quot;, 16.2,
+  &quot;7/29/2020&quot;, 16.4,
+  &quot;7/30/2020&quot;, 16.5,
+  &quot;7/31/2020&quot;, 16.0,
+  &quot;8/1/2020&quot;, 16.1,
+  &quot;8/2/2020&quot;, 15.8,
+  &quot;8/3/2020&quot;, 15.9
+)</code></pre>
+<pre class="r"><code>unmasked &lt;- tribble(
+  ~ date , ~unmasked,
+  &quot;7/12/2020&quot;, 9.9,
+  &quot;7/13/2020&quot;, 9.1,
+  &quot;7/14/2020&quot;, 9.6,
+  &quot;7/15/2020&quot;, 9.9,
+  &quot;7/16/2020&quot;, 9.92,
+  &quot;7/17/2020&quot;, 9.6,
+  &quot;7/18/2020&quot;, 9.6,
+  &quot;7/19/2020&quot;, 9.1,
+  &quot;7/20/2020&quot;, 8.5,
+  &quot;7/21/2020&quot;, 8.5,
+  &quot;7/22/2020&quot;, 8.6,
+  &quot;7/23/2020&quot;, 8.5,
+  &quot;7/24/2020&quot;, 9.9,
+  &quot;7/25/2020&quot;, 9.92,
+  &quot;7/26/2020&quot;, 10.02,
+  &quot;7/27/2020&quot;, 9.7,
+  &quot;7/28/2020&quot;, 9.72,
+  &quot;7/29/2020&quot;, 9.74,
+  &quot;7/30/2020&quot;, 10.0,
+  &quot;7/31/2020&quot;, 8.9,
+  &quot;8/1/2020&quot;, 9.0,
+  &quot;8/2/2020&quot;, 8.9,
+  &quot;8/3/2020&quot;, 9.2
+)</code></pre>
+<pre class="r"><code>full &lt;- left_join(masked, unmasked)</code></pre>
+<pre><code>## Joining, by = &quot;date&quot;</code></pre>
+<pre class="r"><code>full</code></pre>
+<pre><code>## # A tibble: 23 x 3
+##    date      masked unmasked
+##    &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+##  1 7/12/2020   25.5     9.9 
+##  2 7/13/2020   19.8     9.1 
+##  3 7/14/2020   19.8     9.6 
+##  4 7/15/2020   20.5     9.9 
+##  5 7/16/2020   19.8     9.92
+##  6 7/17/2020   19.8     9.6 
+##  7 7/18/2020   20.5     9.6 
+##  8 7/19/2020   19.9     9.1 
+##  9 7/20/2020   20.7     8.5 
+## 10 7/21/2020   21.2     8.5 
+## # ... with 13 more rows</code></pre>
+</div>
+<div id="plotting" class="section level2">
+<h2>Plotting</h2>
+<pre class="r"><code>ggplot(full, aes(date, group = 1)) + 
+  geom_line(aes(y = masked, colour = &quot;masked&quot;)) + 
+  geom_line(aes(y = unmasked, colour = &quot;unmasked&quot;)) +
+  labs(
+    x = &quot;Date&quot;,
+    y = &quot;Units of Infected Individuals&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<strong>New Graph Analysis</strong><br />
+The consistent y-axis for both the masked and unmasked COVID-19 infection rates effectively relays, accurately, the population of infected for the given date. There is no misrepresentation of the population size of masked versus unmasked infected populations by a confusing y-axis system</p>
+<p><strong>Impact</strong><br />
+COVD-19 spread can decrease by the usage of masks while the rate of infection is consistent over time for unmasked counties. However, the overall population of infected individuals has been lower for the unmasked counties versus the masked.</p>
+<div id="video-summary" class="section level3">
+<h3>Video Summary</h3>
+</div>
+</div>

@@ -1,0 +1,99 @@
+---
+title: A04
+author: Mia
+date: '2022-04-14'
+slug: a04
+categories: []
+tags: []
+---
+**Appended Graph Analysis**  
+The appended visualization shows a bias in the data by having different y-axis ranges for no mask and mask counties. It gives the impression that the cases of COVID-19 are within the same ranges between the mask counties and non mask counties. It's only usefulness could come from being able to demonstrate the rate of cases over time. The graph is overall not effective since the peak of no mask counties is at about 10 units while on the mask county's axis this translates to 21 units.   
+
+## Prep  
+
+```{r}
+library(tidyverse)
+```
+
+## Data Frame Construction  
+
+```{r}
+masked <- tribble(
+  ~ date , ~masked,
+  "7/12/2020", 25.5,
+  "7/13/2020", 19.8,
+  "7/14/2020", 19.8,
+  "7/15/2020", 20.5,
+  "7/16/2020", 19.8,
+  "7/17/2020", 19.8,
+  "7/18/2020", 20.5,
+  "7/19/2020", 19.9,
+  "7/20/2020", 20.7,
+  "7/21/2020", 21.2,
+  "7/22/2020", 19.8,
+  "7/23/2020", 19.8,
+  "7/24/2020", 20.5,
+  "7/25/2020", 19.0,
+  "7/26/2020", 19.7,
+  "7/27/2020", 17.0,
+  "7/28/2020", 16.2,
+  "7/29/2020", 16.4,
+  "7/30/2020", 16.5,
+  "7/31/2020", 16.0,
+  "8/1/2020", 16.1,
+  "8/2/2020", 15.8,
+  "8/3/2020", 15.9
+)
+```
+```{r}
+unmasked <- tribble(
+  ~ date , ~unmasked,
+  "7/12/2020", 9.9,
+  "7/13/2020", 9.1,
+  "7/14/2020", 9.6,
+  "7/15/2020", 9.9,
+  "7/16/2020", 9.92,
+  "7/17/2020", 9.6,
+  "7/18/2020", 9.6,
+  "7/19/2020", 9.1,
+  "7/20/2020", 8.5,
+  "7/21/2020", 8.5,
+  "7/22/2020", 8.6,
+  "7/23/2020", 8.5,
+  "7/24/2020", 9.9,
+  "7/25/2020", 9.92,
+  "7/26/2020", 10.02,
+  "7/27/2020", 9.7,
+  "7/28/2020", 9.72,
+  "7/29/2020", 9.74,
+  "7/30/2020", 10.0,
+  "7/31/2020", 8.9,
+  "8/1/2020", 9.0,
+  "8/2/2020", 8.9,
+  "8/3/2020", 9.2
+)
+```
+```{r}
+full <- left_join(masked, unmasked)
+full
+```
+## Plotting  
+
+```{r}
+ggplot(full, aes(date, group = 1)) + 
+  geom_line(aes(y = masked, colour = "masked")) + 
+  geom_line(aes(y = unmasked, colour = "unmasked")) +
+  labs(
+    x = "Date",
+    y = "Units of Infected Individuals"
+  )
+```
+**New Graph Analysis**  
+The consistent y-axis for both the masked and unmasked COVID-19 infection rates effectively relays, accurately, the population of infected for the given date. There is no misrepresentation of the population size of masked versus unmasked infected populations by a confusing y-axis system
+
+**Impact**  
+COVD-19 spread can decrease by the usage of masks while the rate of infection is consistent over time for unmasked counties. However, the overall population of infected individuals has been lower for the unmasked counties versus the masked.
+
+### Video Summary  
+
+
