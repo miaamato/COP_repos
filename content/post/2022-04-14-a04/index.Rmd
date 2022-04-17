@@ -100,4 +100,8 @@ COVD-19 spread can decrease by the usage of masks while the rate of infection is
 
 >> Kogen joined their team which introduced a social networking aspect to this discrete data collection. This was an invasion of privacy to all because nobody knew it was occurring and having knowledge of one individual's profile would automatically allow all of their social media "friends'" profiles to be known. Cambridge Analytica delved into Facebook users and got upwards of 60 million profiles' data. These profiles were the foundation of Cambridge Analytica's algorithms for political microtargetting and building psychological profiles. Cambridge Analytica is connected to other institutions that actually create the targetting content and others that actually published the content. The system takes away from public and social discussions on politics which has led to many niche political rabbit holes creating a severe drift (extremism, partisanship) between the two major parties in the US.
 
+## Data Camp Completion  
+Link to certificate
+>> https://drive.google.com/file/d/19Rdv1Ojtnr4EmvMvj7bw4WVH5QLBsWfD/view?usp=sharing  
+
 
